@@ -66,6 +66,33 @@ const NavBar = () => {
                     External API
                   </NavLink>
                 </NavItem>
+                
+              )}
+              {isAuthenticated && (
+                <NavItem>
+                  <NavLink
+                    tag={RouterNavLink}
+                    to="/stocks"
+                    exact
+                    activeClassName="router-link-exact-active"
+                  >
+                    Stocks
+                  </NavLink>
+                </NavItem>
+                
+              )}
+              {isAuthenticated && (
+                <NavItem>
+                  <NavLink
+                    tag={RouterNavLink}
+                    to="/mystocks"
+                    exact
+                    activeClassName="router-link-exact-active"
+                  >
+                    MyStocks
+                  </NavLink>
+                </NavItem>
+                
               )}
             </Nav>
             <Nav className="d-none d-md-block" navbar>

@@ -1,0 +1,43 @@
+.profileContainer {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profileHeader {
+    align-items: center;
+  }
+  
+  .profilePicture {
+    border: 2px solid #ddd;
+  }
+  
+  .userName {
+    font-size: 2em;
+    margin-bottom: 0.5em;
+  }
+  
+  .textMuted {
+    color: #888;
+  }
+  
+  .profileDetails {
+    margin-top: 20px;
+  }
+  
+  .label {
+    margin-left: 5rem;
+    margin-bottom: 8px;
+  }
+  
+  .depositSection {
+    margin-top: 20px;
+  }
+  
+  .depositButton {
+    margin-left: 6rem;
+  }
+  

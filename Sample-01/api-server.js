@@ -4,6 +4,8 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const { auth } = require("express-oauth2-jwt-bearer");
 const authConfig = require("./src/auth_config.json");
+require('dotenv').config({ path: './.env.local' });
+
 
 const app = express();
 
@@ -37,6 +39,28 @@ app.get("/api/external", checkJwt, (req, res) => {
   res.send({
     msg: "Your access token was successfully validated!",
   });
+});
+
+app.post('/api/getToken', async (req, res) => {
+  var options = {
+    method: 'POST',
+    url: 'https://dev-c6qwwrh4suoknli2.us.auth0.com/oauth/token',
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    data: new URLSearchParams({
+      grant_type: 'client_credentials',
+      client_id: process.env.AUTH0_CLIENT_ID,
+      client_secret: process.env.AUTH0_CLIENT_SECRET,
+      audience: process.env.AUTH0_AUDIENCE
+    })
+  };
+
+  try {
+    const response = await axios.request(options);
+    res.send(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Failed to fetch token.');
+  }
 });
 
 app.listen(port, () => console.log(`API Server listening on port ${port}`));
