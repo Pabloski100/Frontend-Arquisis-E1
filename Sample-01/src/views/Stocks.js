@@ -20,50 +20,32 @@ const Stocks = () => {
   const [token, setToken] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     if (user) {
-      axios
-        .post('http://localhost:3001/api/getToken')
-        .then(function (response) {
-          const token = response.data.access_token;
-          setToken(token);
+      axios.get(`https://asyncfintech.me/getUser?auth0Id=${user.sub}`)
+        .then(response => {
+          if (response.data.success) {
+            setData(response.data.data);
+            setUserData(response.data.data);
+            
+          } else {
+            console.error(response.data.message);
+          }
         })
-        .catch(function (error) {
+        .catch(error => {
           console.error(error);
         });
     }
   }, [user]);
-
-  useEffect(() => {
-    if (user && token) {
-      var options = {
-        method: 'GET',
-        url: 'https://dev-c6qwwrh4suoknli2.us.auth0.com/api/v2/users',
-        params: { q: user.email, search_engine: 'v3' },
-        headers: {
-          Authorization: 'Bearer ' + token
-        }
-      };
-
-      axios
-        .request(options)
-        .then(function (response) {
-          const data = response.data;
-          setData(data);
-        })
-        .catch(function (error) {
-          console.error(error);
-        });
-    }
-  }, [user, token]);
 
   const handleBuyStock = async (stock_id, stock_price, stock_symbol, stock_shortName) => {
     try {
       const ipResponse = await axios.get('https://ipinfo.io/json?token=f27743517e5212');
       const location = ipResponse.data.country + ' - ' + ipResponse.data.region + ' - ' + ipResponse.data.city;
 
-      const response = await fetch('https://bc58dyc2of.execute-api.us-east-1.amazonaws.com/Dev/buy', {
+      const response = await fetch('https://asyncfintech.me/buy', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -71,13 +53,11 @@ const Stocks = () => {
         credentials: 'include',
         body: JSON.stringify({
           userId: user.sub,
-          userBalance: data[0].user_metadata.balance,
           stockId: stock_id,
           stockPrice: stock_price,
           stockSymbol: stock_symbol,
           stockShortName: stock_shortName,
           location: location,
-          token: token
         })
       });
 
@@ -99,7 +79,7 @@ const Stocks = () => {
   useEffect(() => {
     const fetchStocks = async () => {
       try {
-        const response = await fetch(`https://bc58dyc2of.execute-api.us-east-1.amazonaws.com/Dev/stocks?page=${page}&size=1`);
+        const response = await fetch(`https://asyncfintech.me/stocks?page=${page}&size=1`);
         if (!response.ok) {
           throw new Error('Network response was not ok ' + response.statusText);
         }
@@ -119,7 +99,7 @@ const Stocks = () => {
   useEffect(() => {
     const fetchStockDetails = async () => {
       try {
-        const response = await fetch(`https://bc58dyc2of.execute-api.us-east-1.amazonaws.com/Dev/stocks/${selectedStockSymbol}?page=${detailsPage}&size=1`);
+        const response = await fetch(`https://asyncfintech.me/stocks/${selectedStockSymbol}?page=${detailsPage}&size=1`);
         if (!response.ok) {
           throw new Error('Network response was not ok ' + response.statusText);
         }
@@ -138,7 +118,7 @@ const Stocks = () => {
 
   const handleNext = async () => {
     try {
-      const response = await fetch(`https://bc58dyc2of.execute-api.us-east-1.amazonaws.com/Dev/stocks?page=${page + 1}&size=1`);
+      const response = await fetch(`https://asyncfintech.me/stocks?page=${page + 1}&size=1`);
       if (!response.ok) {
         throw new Error('Network response was not ok ' + response.statusText);
       }
@@ -165,7 +145,7 @@ const Stocks = () => {
   const handleDetailsNext = async () => {
     try {
       const response = await fetch(
-        `https://bc58dyc2of.execute-api.us-east-1.amazonaws.com/Dev/stocks/${selectedStockSymbol}?page=${detailsPage + 1}&size=1`
+        `https://asyncfintech.me/stocks/${selectedStockSymbol}?page=${detailsPage + 1}&size=1`
       );
       if (!response.ok) {
         throw new Error('Network response was not ok ' + response.statusText);

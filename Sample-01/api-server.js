@@ -4,7 +4,8 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const { auth } = require("express-oauth2-jwt-bearer");
 const authConfig = require("./src/auth_config.json");
-require('dotenv').config({ path: './.env.local' });
+require('dotenv').config({ path: './.env' });
+const axios = require('axios');
 
 
 const app = express();
@@ -42,6 +43,10 @@ app.get("/api/external", checkJwt, (req, res) => {
 });
 
 app.post('/api/getToken', async (req, res) => {
+  console.log("API Server: /api/getToken");
+  console.log("API Server: AUTH0_CLIENT_ID: " + process.env.AUTH0_CLIENT_ID);
+  console.log("API Server: AUTH0_CLIENT_SECRET: " + process.env.AUTH0_CLIENT_SECRET);
+  console.log("API Server: AUTH0_AUDIENCE: " + process.env.AUTH0_AUDIENCE);
   var options = {
     method: 'POST',
     url: 'https://dev-c6qwwrh4suoknli2.us.auth0.com/oauth/token',

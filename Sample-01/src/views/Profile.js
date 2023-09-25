@@ -3,73 +3,53 @@ import { Container, Row, Col } from "reactstrap";
 
 import Highlight from "../components/Highlight";
 import Loading from "../components/Loading";
+import ErrorMessage from '../components/ErrorMessage'
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import styles from "./viewsCss/profile.css";
 import axios from 'axios';
 
-export const ProfileComponent = () => {
+export const Profile = () => {
   const { user, isLoading} = useAuth0();
   const [depositAmount, setDepositAmount] = useState('');
   const [data, setData] = useState(null);
-  const [token, setToken] = useState(null);
+  const [userBalance, setUserBalance] = useState(0);
 
   useEffect(() => {
     if (user) {
-      axios
-        .post('http://localhost:3001/api/getToken')
-        .then(function (response) {
-          const token = response.data.access_token;
-          setToken(token);
+      console.log("User.sub is:", user.sub);
+      axios.get(`https://asyncfintech.me/getUser?auth0Id=${user.sub}`)
+        .then(response => {
+          if (response.data.success) {
+            setData(response.data.data);
+            setUserBalance(response.data.data.balance);
+          } else {
+            console.error(response.data.message);
+          }
         })
-        .catch(function (error) {
+        .catch(error => {
           console.error(error);
         });
     }
   }, [user]);
 
-  useEffect(() => {
-    if (user && token) {
-      var options = {
-        method: 'GET',
-        url: 'https://dev-c6qwwrh4suoknli2.us.auth0.com/api/v2/users',
-        params: { q: user.email, search_engine: 'v3' },
-        headers: {
-          Authorization: 'Bearer ' + token
-        }
-      };
-
-      axios
-        .request(options)
-        .then(function (response) {
-          const data = response.data;
-          setData(data);
-        })
-        .catch(function (error) {
-          console.error(error);
-        });
-    }
-  }, [user, token]);
-
-  console.log(data);
-
   const handleDeposit = async () => {
     try {
-      const response = await fetch('https://bc58dyc2of.execute-api.us-east-1.amazonaws.com/Dev/deposit', {
+      const response = await fetch('https://asyncfintech.me/deposit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         credentials: 'include',
         body: JSON.stringify({
-          userId: user.sub,
-          amount: depositAmount,
-          token: token
+          auth0Id: user.sub,
+          amount: depositAmount
         })
       });
-
+  
       const result = await response.json();
+
       if (result.success) {
-        window.location.reload();
+        setUserBalance((prevBalance) => prevBalance + parseFloat(depositAmount));
       } else {
         console.error(result.message);
       }
@@ -79,25 +59,26 @@ export const ProfileComponent = () => {
   };
 
   return (
-    <Container className="mb-5">
-      <Row className="align-items-center profile-header mb-5 text-center text-md-left">
-        <Col md={2}>
-          <img
-            src={user.picture}
-            alt="Profile"
-            className="rounded-circle img-fluid profile-picture mb-3 mb-md-0"
-          />
-        </Col>
-        <Col md>
-          <h2>{user.name}</h2>
-          <p className="lead text-muted">{user.email}</p>
-          <p className={styles.textMuted}>Balance: ${data ? data[0].user_metadata.balance : 0}</p>
-        </Col>
-      </Row>
-      <Row>
-        <Highlight>{JSON.stringify(user, null, 2)}</Highlight>
-      </Row>
-      <Row className={styles.depositSection}>
+    <>
+      {isLoading && <Loading />}
+      {user && (
+        <div className={styles.profileContainer}>
+          <Row className={styles.profileHeader}>
+            <Col md={2}>
+              <img
+                src={user.picture}
+                alt={`${user.name}'s Profile`}
+                className={`${styles.profilePicture} rounded-circle img-fluid`}
+                decode="async"
+              />
+            </Col>
+            <Col md>
+              <h2 className={styles.userName}>{user.name}</h2>
+              <p className={styles.textMuted}>{user.email}</p>
+              <p className={styles.textMuted}>Balance: ${userBalance}</p>
+            </Col>
+          </Row>
+          <Row className={styles.depositSection}>
             <Col md={{ size: 4, offset: 4 }} className={styles.depositContainer}>
               <div className={styles.depositField}>
                 <label htmlFor="depositAmount" className={styles.label}>
@@ -107,7 +88,7 @@ export const ProfileComponent = () => {
                   id="depositAmount"
                   type="number"
                   value={depositAmount}
-                  onChange={e => setDepositAmount(Number(e.target.value))}
+                  onChange={(e) => setDepositAmount(Number(e.target.value))}
                   className="form-control"
                 />
               </div>
@@ -116,10 +97,14 @@ export const ProfileComponent = () => {
               </button>
             </Col>
           </Row>
-    </Container>
+        </div>
+      )}
+      {!user && <ErrorMessage>Failed to load user data. Please try again later.</ErrorMessage>}
+    </>
   );
-};
+}
 
-export default withAuthenticationRequired(ProfileComponent, {
+export default withAuthenticationRequired(Profile, {
   onRedirecting: () => <Loading />,
+  onError: (error) => <ErrorMessage>{error.message}</ErrorMessage>,
 });
