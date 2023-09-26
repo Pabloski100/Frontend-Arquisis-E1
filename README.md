@@ -39,7 +39,7 @@ AUTH0_SCOPE='openid profile email read:shows update:users'
 
 ## Views
 
-La paǵina web deployada en AWS S3 tiene el siguiente URL: !!!
+La paǵina web deployada en AWS S3 tiene el siguiente URL: [https://www.domingocarvajalads.me](https://www.domingocarvajalads.me)
 
 Luego, las vistas de la aplicación son las siguientes:
 
@@ -71,7 +71,7 @@ A su vez, clickeando en ícono del usuario loggeado se despliega un menú con la
 - [x] **RF04**: Al acceder al detalle de una acción comprada por el usuario (View My Stocks)el sistema indica desde dónde el usuario hizo la compra gracias al uso de su ip.
 
 - [x] **RF05**: Al comprar se informa que acción se realizó correctamente (también se indica cuando no se puede comprar por falta de dinero).
-    - [x] **RF05 BONUS**: No implementado (Había sido implmentado en versión anterior, pero por problemas con NestJS fuera de nuestro poder, i.e. no se podía deployar en AWS S2, tuvimos que hacer auth0 nuevamente usando React. Mostraba evolución del precio de la acción en intervalos de una hora)
+    - [x] **RF05 BONUS**: Implementado, se puede ver el grafico de los stocks comprados.
 
 ## Requisitos No Funcionales :wrench:
 
