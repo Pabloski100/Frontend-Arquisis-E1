@@ -73,13 +73,14 @@ function My_stocks() {
     return `${formattedDate} ${formattedTime}`;
   };
 
+
   const renderStocks = () => {
-    if (!data || !data[0].user_metadata.stocks) {
+    if (!stocks) {
       return <p className={styles.text}>No stocks available.</p>;
     }
 
-    const stocks = data[0].user_metadata.stocks;
     console.log(stocks);
+
     return (
       <ul className={styles.stockList}>
         {stocks.map((stock, index) => (

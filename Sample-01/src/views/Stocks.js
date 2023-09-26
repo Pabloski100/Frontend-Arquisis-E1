@@ -66,7 +66,6 @@ const Stocks = () => {
       if (result.success) {
         setPopupMessage('Successfully bought stock');
         setShowPopup(true);
-        window.location.reload();
       } else {
         setPopupMessage(result.message);
         setShowPopup(true);
