@@ -1,0 +1,40 @@
+name: NestJS Test
+
+on:
+  push:
+    branches:
+      - master  # Change this to your default branch if necessary
+  pull_request:
+    branches:
+      - master  # Change this to your default branch if necessary
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 14  # You can specify your preferred Node.js version
+        
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Run Unit Tests
+      run: npm test
+
+    # - name: Check Code Formatting with Prettier
+    #   run: npm run prettier -- --check
+
+    - name: TruffleHog Enterprise scan
+      uses: trufflesecurity/TruffleHog-Enterprise-Github-Action@main
+      with:
+          args: --fail-verified ${{ github.event.repository.default_branch }} HEAD
+
+
+
+
