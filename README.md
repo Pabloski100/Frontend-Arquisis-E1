@@ -31,11 +31,7 @@ Si el token expira deben crearse una nueva cuenta y cambiar los valores del env.
 
 ``````
 AUTH0_SECRET='e68278ea73c6cf442e2e4ef87ad442ce1c78076056372a4bb5dca171dabb1e7a'
-AUTH0_BASE_URL='http://localhost:8000'
-AUTH0_ISSUER_BASE_URL='https://dev-c6qwwrh4suoknli2.us.auth0.com'
-AUTH0_CLIENT_ID='3U13tKK65n8K0Hc3kfJfdIn73Fiu08kJ'
 AUTH0_CLIENT_SECRET='5yYyQL64mbIMjcQHdXnXnRFWv17wzOrEOVB5R-sT-emR1oTE49DUN6ZyPS7DG-XZ'
-AUTH0_AUDIENCE='https://dev-c6qwwrh4suoknli2.us.auth0.com/api/v2/'
 AUTH0_SCOPE='openid profile email read:shows update:users'
 ``````
 
