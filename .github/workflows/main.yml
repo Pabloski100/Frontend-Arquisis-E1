@@ -21,10 +21,11 @@ jobs:
       with:
         node-version: 14 
 
-    - name: Change Working Directory
-      run: cd Sample-01
+    # - name: Change Working Directory
+    #   run: cd Sample-01
         
     - name: Install Dependencies
+      run: cd Sample-01
       run: npm install
 
     - name: Run Unit Tests
