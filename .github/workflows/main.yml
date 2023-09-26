@@ -24,9 +24,10 @@ jobs:
     # - name: Change Working Directory
     #   run: cd Sample-01
         
-    - name: Install Dependencies
-      run: cd Sample-01
-      run: npm install
+    - name: Change Directory and Install Dependencies
+      run: |
+      cd Sample-01
+      npm install
 
     - name: Run Unit Tests
       run: npm test
