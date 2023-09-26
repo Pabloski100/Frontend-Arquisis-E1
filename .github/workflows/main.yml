@@ -1,12 +1,12 @@
-name: NestJS Test
+name: React Test
 
 on:
   push:
     branches:
-      - main  # Change this to your default branch if necessary
+      - main
   pull_request:
     branches:
-      - main  # Change this to your default branch if necessary
+      - main 
 
 jobs:
   test:
@@ -19,7 +19,10 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: 14  # You can specify your preferred Node.js version
+        node-version: 14 
+
+    - name: Change Working Directory
+      run: cd Sample-01
         
     - name: Install Dependencies
       run: npm install
