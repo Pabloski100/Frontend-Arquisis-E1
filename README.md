@@ -6,12 +6,14 @@
 2. [Auth0 env variables](#auth0-env-variables)
 3. [Views](#views)
 4. [Requisitos Funcionales](#requisitos-funcionales-clipboard)
-5. [Requisitos No Funcionales](#requisitos-no-funcionales-wrench) !
+5. [Requisitos No Funcionales](#requisitos-no-funcionales-wrench)
 6. [Instrucciones de Despliegue](#instrucciones-de-despliegue-rocket)
 
 --- 
 
 ## Introducción :loudspeaker:
+
+LINK PÁGINA WEB: [https://www.domingocarvajalads.me](https://www.domingocarvajalads.me)
 
 Este proyecto consiste en una API REST que permite a los usuarios de la aplicación realizar transacciones de compra y venta de acciones de empresas. Para esto, se utiliza la API de [Auth0](https://auth0.com/) para la autenticación de los usuarios.
 
@@ -69,7 +71,7 @@ A su vez, clickeando en ícono del usuario loggeado se despliega un menú con la
 - [x] **RF04**: Al acceder al detalle de una acción comprada por el usuario (View My Stocks)el sistema indica desde dónde el usuario hizo la compra gracias al uso de su ip.
 
 - [x] **RF05**: Al comprar se informa que acción se realizó correctamente (también se indica cuando no se puede comprar por falta de dinero).
-    - [x] **RF05 BONUS**: Gráfico implementado. Muestra evolución del precio de la acción en intervalos de una hora.
+    - [x] **RF05 BONUS**: No implementado (Había sido implmentado en versión anterior, pero por problemas con NestJS fuera de nuestro poder, i.e. no se podía deployar en AWS S2, tuvimos que hacer auth0 nuevamente usando React. Mostraba evolución del precio de la acción en intervalos de una hora)
 
 ## Requisitos No Funcionales :wrench:
 
@@ -77,14 +79,14 @@ A su vez, clickeando en ícono del usuario loggeado se despliega un menú con la
 
 - [x] **RNF01**: Front implementado como SPA con React. Repositorio independiente, separado del Backend.
 
-- [x] **RNF05**: Frontend utiliza HTTPS. !!! (AWS S3)
+- [x] **RNF05**: Frontend utiliza HTTPS. 
 
 - [x] **RNF06**: Servicio de autentificación/autorización implementado con Auth0.
     - [x] **RNF06 BONUS**: No implementado.
 
-- [x] **RNF07**: Frontend desplegado en S3 con distribución de CloudFront. !!!!
+- [x] **RNF07**: Frontend desplegado en S3 con distribución de CloudFront. No implementado.
 
-- [x] **RNF09**: CircleCI implementado usando Github Actions.
+- [x] **RNF09**: Integración continua implementado usando Github Actions.
     - [x] **RNF09 BONUS**: No implementado.
 
 
