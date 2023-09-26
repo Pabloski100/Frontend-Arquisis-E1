@@ -24,6 +24,7 @@ const Stocks = () => {
 
   useEffect(() => {
     if (user) {
+      console.log("user: " + user.sub);
       axios.get(`https://asyncfintech.me/getUser?auth0Id=${user.sub}`)
         .then(response => {
           if (response.data.success) {

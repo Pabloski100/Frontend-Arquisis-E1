@@ -15,67 +15,42 @@ function My_stocks() {
   const [data, setData] = useState(null);
   const [token, setToken] = useState(null);
   const [historicalData, setHistoricalData] = useState({});
+  const [stocks, setStocks] = useState(null);
 
   useEffect(() => {
     if (user) {
-      axios
-        .post('http://localhost:3001/api/getToken')
-        .then(function (response) {
-          const token = response.data.access_token;
-          setToken(token);
+      axios.get(`https://asyncfintech.me/getUser?auth0Id=${user.sub}`)
+        .then(response => {
+          if (response.data.success) {
+            setStocks(response.data.data.stocks);
+          } else {
+            console.error(response.data.message);
+          }
         })
-        .catch(function (error) {
+        .catch(error => {
           console.error(error);
         });
     }
   }, [user]);
 
   useEffect(() => {
-    if (user && token) {
-      var options = {
-        method: 'GET',
-        url: 'https://dev-c6qwwrh4suoknli2.us.auth0.com/api/v2/users',
-        params: { q: user.email, search_engine: 'v3' },
-        headers: {
-          Authorization: 'Bearer ' + token
-        }
+    if (stocks) {
+      const fetchAllHistories = async () => {
+        const allPromises = stocks.map((stock) => fetchAllStockHistory(stock.stockSymbol));
+        const allData = await Promise.all(allPromises);
+        const newHistoricalData = {};
+        stocks.forEach((stock, index) => {
+          newHistoricalData[stock.stockSymbol] = allData[index];
+        });
+        setHistoricalData(newHistoricalData);
       };
-
-      axios
-        .request(options)
-        .then(function (response) {
-          const data = response.data;
-          console.log(data);
-          setData(data);
-        })
-        .catch(function (error) {
-          console.error(error);
-        });
+      fetchAllHistories();
     }
-  }, [user, token]);
-
-  useEffect(() => {
-    if (data && data[0].user_metadata.stocks) {
-      const stocks = data[0].user_metadata.stocks;
-      const promises = stocks.map(stock => fetchAllStockHistory(stock.stockSymbol));
-
-      Promise.all(promises)
-        .then(responses => {
-          const newHistoricalData = {};
-          responses.forEach((response, index) => {
-            newHistoricalData[stocks[index].stockSymbol] = response;
-          });
-          setHistoricalData(newHistoricalData);
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }
-  }, [data]);
+  }, [stocks]);
 
   const fetchAllStockHistory = async (symbol, page = 1, size = 25, allData = []) => {
     try {
-      const response = await axios.get(`https://bc58dyc2of.execute-api.us-east-1.amazonaws.com/Dev/stocks/${symbol}?page=${page}&size=${size}`);
+      const response = await axios.get(`https://asyncfintech.me/stocks/${symbol}?page=${page}&size=${size}`);
       if (response.data.length === 0) {
         return allData;
       }
