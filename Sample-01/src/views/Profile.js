@@ -5,7 +5,7 @@ import Highlight from "../components/Highlight";
 import Loading from "../components/Loading";
 import ErrorMessage from '../components/ErrorMessage'
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
-import styles from "./viewsCss/profile.css";
+import styles from "./viewsCss/profile.module.css";
 import axios from 'axios';
 
 export const Profile = () => {

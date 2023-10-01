@@ -1,27 +1,28 @@
 const contentData = [
   {
-    title: "Configure other identity providers",
-    link: "https://auth0.com/docs/connections",
-    description:
-      "Auth0 supports social providers as Facebook, Twitter, Instagram and 100+, Enterprise providers as Microsoft Office 365, Google Apps, Azure, and more. You can also use any OAuth2 Authorization Server."
+    title: 'Market Analysis',
+    description: 'Get the latest insights and deep analyses of market trends to make informed decisions.',
+    link: 'https://equityempire.com/market-analysis'
   },
   {
-    title: "Enable Multifactor Authentication",
-    link: "https://auth0.com/docs/multifactor-authentication",
-    description:
-      "Add an extra layer of security by enabling Multi-factor Authentication, requiring your users to provide more than one piece of identifying information. Push notifications, authenticator apps, SMS, and DUO Security are supported."
+    title: 'Investment Strategies',
+    description: 'Learn about various investment strategies to help you build a robust portfolio.',
+    link: 'https://equityempire.com/investment-strategies'
   },
   {
-    title: "Anomaly Detection",
-    link: "https://auth0.com/docs/anomaly-detection",
-    description:
-      "Auth0 can detect anomalies and stop malicious attempts to access your application. Anomaly detection can alert you and your users of suspicious activity, as well as block further login attempts."
+    title: 'Stock Screener',
+    description: 'Utilize our advanced stock screener to find stocks that meet your specific criteria.',
+    link: 'https://equityempire.com/stock-screener'
   },
   {
-    title: "Learn About Rules",
-    link: "https://auth0.com/docs/rules",
-    description:
-      "Rules are JavaScript functions that execute when a user authenticates to your application. They run once the authentication process is complete, and you can use them to customize and extend Auth0's capabilities."
+    title: 'Educational Resources',
+    description: 'Access a wealth of resources to enhance your understanding of the stock market.',
+    link: 'https://equityempire.com/educational-resources'
+  },
+  {
+    title: 'Community Forums',
+    description: 'Join our community forums to connect with other investors and share insights.',
+    link: 'https://equityempire.com/community-forums'
   }
 ];
 

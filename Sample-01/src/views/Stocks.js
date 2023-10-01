@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
-import styles from './viewsCss/stocks.css';
+import styles from './viewsCss/stocks.module.css';
 import axios from 'axios';
 
 const Stocks = () => {

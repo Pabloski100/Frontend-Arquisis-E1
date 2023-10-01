@@ -1,10 +1,12 @@
-import React from "react";
+import React from 'react';
 
 const Footer = () => (
-  <footer className="bg-light p-3 text-center">
-    <div className="logo" />
+  <footer className="bg-light p-3 text-center" data-testid="footer">
+    <p data-testid="footer-text">© 2023 EquityEmpire. All rights reserved.</p>
     <p>
-      Sample project provided by <a href="https://auth0.com">Auth0</a>
+      <a href="https://equityempire.com/terms-of-service">Terms of Service</a> |
+      <a href="https://equityempire.com/privacy-policy"> Privacy Policy</a> |
+      <a href="https://equityempire.com/contact"> Contact Us</a>
     </p>
   </footer>
 );

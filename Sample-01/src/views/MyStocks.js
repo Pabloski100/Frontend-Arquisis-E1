@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col } from 'reactstrap';
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
-import styles from './viewsCss/myStocks.css';
+import styles from './viewsCss/myStocks.module.css';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage'
 import { Line } from 'react-chartjs-2';
@@ -36,17 +36,18 @@ function My_stocks() {
   useEffect(() => {
     if (stocks) {
       const fetchAllHistories = async () => {
-        const allPromises = stocks.map((stock) => fetchAllStockHistory(stock.stockSymbol));
+        const uniqueSymbols = [...new Set(stocks.map(stock => stock.stockSymbol))];
+        const allPromises = uniqueSymbols.map(symbol => fetchAllStockHistory(symbol));
         const allData = await Promise.all(allPromises);
         const newHistoricalData = {};
-        stocks.forEach((stock, index) => {
-          newHistoricalData[stock.stockSymbol] = allData[index];
+        uniqueSymbols.forEach((symbol, index) => {
+          newHistoricalData[symbol] = allData[index];
         });
         setHistoricalData(newHistoricalData);
       };
       fetchAllHistories();
     }
-  }, [stocks]);
+  }, [stocks]);  
 
   const fetchAllStockHistory = async (symbol, page = 1, size = 25, allData = []) => {
     try {
@@ -73,29 +74,41 @@ function My_stocks() {
     return `${formattedDate} ${formattedTime}`;
   };
 
-
   const renderStocks = () => {
     if (!stocks) {
       return <p className={styles.text}>No stocks available.</p>;
     }
-
-    console.log(stocks);
-
+  
+    const stockGroups = {};
+  
+    stocks.forEach(stock => {
+      if (!stockGroups[stock.stockSymbol]) {
+        stockGroups[stock.stockSymbol] = [];
+      }
+      stockGroups[stock.stockSymbol].push(stock);
+    });
+  
     return (
       <ul className={styles.stockList}>
-        {stocks.map((stock, index) => (
+        {Object.keys(stockGroups).map((symbol, index) => (
           <div className={styles.stockItem} key={index}>
-            <p className={styles.text}>Company: {stock.stockShortName}</p>
-            <p className={styles.text}>Symbol: {stock.stockSymbol}</p>
-            <p className={styles.text}>Price: {stock.stockPrice}</p>
-            <p className={styles.text}>Date: {formatDate(stock.date)}</p>
-            <p className={styles.text}>Location: {stock.location}</p>
-            {renderChart(stock.stockSymbol)}
+            {stockGroups[symbol].map((stock, subIndex) => (
+              <div key={subIndex}>
+                <h2 className={styles.header}>Stock {subIndex + 1}</h2>
+                <p className={styles.text}>Company: {stock.stockShortName}</p>
+                <p className={styles.text}>Symbol: {stock.stockSymbol}</p>
+                <p className={styles.text}>Price: {stock.stockPrice}</p>
+                <p className={styles.text}>Date: {formatDate(stock.date)}</p>
+                <p className={styles.text}>Location: {stock.location}</p>
+              </div>
+            ))}
+            <h2 className={styles.header}>Chart</h2>
+            {renderChart(symbol)}
           </div>
         ))}
       </ul>
     );
-  };
+  };  
 
   const renderChart = symbol => {
     const stockData = historicalData[symbol];
