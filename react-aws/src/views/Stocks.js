@@ -43,7 +43,7 @@ const Stocks = () => {
         const newUserDetails = session.getIdToken().payload;
         setUser(newUserDetails);
 
-        axios.get(`https://p2yic55oma.execute-api.us-east-1.amazonaws.com/Dev/getUser?auth0Id=${newUserDetails.sub}`, {
+        axios.get(`https://api.asyncfintech.me/getUser?auth0Id=${newUserDetails.sub}`, {
         headers: {
           'Authorization': `Bearer ${newToken}`
         }
@@ -74,7 +74,7 @@ const Stocks = () => {
       const ipResponse = await axios.get('https://ipinfo.io/json?token=f27743517e5212');
       const location = ipResponse.data.country + ' - ' + ipResponse.data.region + ' - ' + ipResponse.data.city;
   
-      const response = await axios.post('https://p2yic55oma.execute-api.us-east-1.amazonaws.com/Dev/buy', {
+      const response = await axios.post('https://api.asyncfintech.me/buy', {
         userId: user.sub,
         stockId: stock_id,
         stockPrice: stock_price,
@@ -110,7 +110,7 @@ const Stocks = () => {
       try {
         console.log('token: ', token);
         const response = await axios.get(
-          'https://p2yic55oma.execute-api.us-east-1.amazonaws.com/Dev/stocks',
+          'https://api.asyncfintech.me/stocks',
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -135,7 +135,7 @@ const Stocks = () => {
   useEffect(() => {
     const fetchStockDetails = async () => {
       try {
-        const response = await axios.get(`https://p2yic55oma.execute-api.us-east-1.amazonaws.com/Dev/stocks/${selectedStockSymbol}`, {
+        const response = await axios.get(`https://api.asyncfintech.me/stocks/${selectedStockSymbol}`, {
           params: {
             page: detailsPage,
             size: 1
@@ -159,7 +159,7 @@ const Stocks = () => {
 
 const handleNext = async () => {
     try {
-      const response = await axios.get(`https://p2yic55oma.execute-api.us-east-1.amazonaws.com/Dev/stocks`, {
+      const response = await axios.get(`https://api.asyncfintech.me/stocks`, {
         params: {
           page: page + 1,
           size: 1
@@ -190,7 +190,7 @@ const handleBack = () => {
 
 const handleDetailsNext = async () => {
     try {
-      const response = await axios.get(`https://p2yic55oma.execute-api.us-east-1.amazonaws.com/Dev/stocks/${selectedStockSymbol}`, {
+      const response = await axios.get(`https://api.asyncfintech.me/stocks/${selectedStockSymbol}`, {
         params: {
           page: detailsPage + 1,
           size: 1

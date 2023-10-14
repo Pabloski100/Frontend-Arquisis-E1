@@ -39,7 +39,7 @@ export const Profile = () => {
 
         console.log("user sub: ", newUserDetails.sub);
 
-        axios.get(`https://p2yic55oma.execute-api.us-east-1.amazonaws.com/Dev/getUser?auth0Id=${newUserDetails.sub}`, {
+        axios.get(`https://api.asyncfintech.me/getUser?auth0Id=${newUserDetails.sub}`, {
         headers: {
           'Authorization': `Bearer ${newToken}`
         }
@@ -62,7 +62,7 @@ export const Profile = () => {
   const handleDeposit = async () => {
     if (cognitoUser !== null) {
       try {
-        const response = await axios.post('https://p2yic55oma.execute-api.us-east-1.amazonaws.com/Dev/deposit', {
+        const response = await axios.post('https://api.asyncfintech.me/deposit', {
           auth0Id: user.sub,
           amount: depositAmount
         }, {
