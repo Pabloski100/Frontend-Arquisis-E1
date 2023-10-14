@@ -1,0 +1,83 @@
+.profileContainer {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profileHeader {
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profilePicture {
+  border: 3px solid #ddd;
+  width: 170px;
+  height: 170px;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.userName {
+  font-size: 2.2em;
+  font-weight: 600;
+  margin-bottom: 0.3em;
+  color: #333;
+}
+
+.textMuted {
+  font-size: 1em;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.depositSection {
+  margin-top: 30px;
+  flex-direction: column;
+}
+
+.label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.depositButton {
+  background: linear-gradient(90deg, #007BFF, #00C6FF);
+  border: none;
+  color: white;
+  padding: 10px 30px;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.depositButton:hover {
+  background: linear-gradient(90deg, #0056b3, #0090c1);
+}
+
+.form-control {
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  transition: border 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #007BFF;
+  box-shadow: none;
+}
+  
