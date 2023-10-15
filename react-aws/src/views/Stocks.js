@@ -97,25 +97,42 @@ const Stocks = () => {
       });
 
       console.log(response)
+
+      // const emailParams = {
+      //   from_name: "AsyncFintech",
+      //   to_name: user.name,
+      //   user_email: user.email,
+      //   stock_name: stock_shortName,
+      //   stock_price: stock_price,
+      //   buy_date: String(new Date()),
+      // }
+
+      // console.log("post params")
+      // const emailtest = await emailjs.send("service_t2n2ilp","template_b42hdfs", emailParams, 'nHk13LYZyg4X4xrvX');
+      // console.log(emailtest)
   
       const result = response.data;
       if (result.success) {
         setPopupMessage('Successfully bought stock!');
         setShowPopup(true);
-        emailjs.send("service_t2n2ilp","template_b42hdfs",{
+        const emailParams = {
           from_name: "AsyncFintech",
           to_name: user.name,
           user_email: user.email,
           stock_name: stock_shortName,
           stock_price: stock_price,
           buy_date: String(new Date()),
-          });
+          }
+        emailjs.send("service_t2n2ilp","template_b42hdfs", emailParams, 'nHk13LYZyg4X4xrvX');
         window.location.reload();
       } else {
+        console.log("Success error")
         setPopupMessage(result.message);
         setShowPopup(true);
       }
     } catch (error) {
+      console.log("Buy error")
+      console.log(error)
       setPopupMessage(error.message);
       setShowPopup(true);
     }
@@ -138,6 +155,7 @@ const Stocks = () => {
         setStocks(data);
         setIsLoading(false);
       } catch (error) {
+        console.log("Function error")
         setError(error);
         setIsLoading(false);
       }
