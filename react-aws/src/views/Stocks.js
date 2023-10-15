@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import UserPhoto from '../utils/UserPhoto.png';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import { useNavigate } from "react-router-dom";
+import emailjs from '@emailjs/browser'
 
 const userPool = new CognitoUserPool({
   UserPoolId: process.env.REACT_APP_USERPOOL_ID,
@@ -71,8 +72,14 @@ const Stocks = () => {
       console.log('stock_price: ', stock_price);
       console.log('stock_symbol: ', stock_symbol);
       console.log('stock_shortName: ', stock_shortName);
+      console.log('user data: ', user.email)
+
+      console.log("antes")
+
       const ipResponse = await axios.get('https://ipinfo.io/json?token=f27743517e5212');
       const location = ipResponse.data.country + ' - ' + ipResponse.data.region + ' - ' + ipResponse.data.city;
+
+      console.log("despues")
   
       const response = await axios.post('https://api.asyncfintech.me/buy', {
         userId: user.sub,
@@ -88,12 +95,21 @@ const Stocks = () => {
           'Authorization': `Bearer ${token}`
         },
       });
+
+      console.log(response)
   
       const result = response.data;
       if (result.success) {
-
         setPopupMessage('Successfully bought stock!');
         setShowPopup(true);
+        emailjs.send("service_t2n2ilp","template_b42hdfs",{
+          from_name: "AsyncFintech",
+          to_name: user.name,
+          user_email: user.email,
+          stock_name: stock_shortName,
+          stock_price: stock_price,
+          buy_date: String(new Date()),
+          });
         window.location.reload();
       } else {
         setPopupMessage(result.message);
