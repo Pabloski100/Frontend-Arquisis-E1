@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import UserPhoto from '../utils/UserPhoto.png';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import { useNavigate } from "react-router-dom";
+import emailjs from '@emailjs/browser'
 
 const userPool = new CognitoUserPool({
   UserPoolId: process.env.REACT_APP_USERPOOL_ID,
@@ -24,11 +25,13 @@ const Stocks = () => {
   const [hasMoreStocks, setHasMoreStocks] = useState(true);
   const [hasMoreDetails, setHasMoreDetails] = useState(true);
   const [token, setToken] = useState(null);
+  const [transbankToken, setTransbankToken] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
   const [userData, setUserData] = useState(null);
   const [user, setUser] = useState(null);
 
+  const navigate = useNavigate();
   const cognitoUser = userPool.getCurrentUser();
 
   useEffect(() => {
@@ -65,22 +68,16 @@ const Stocks = () => {
 
   const handleBuyStock = async (stock_id, stock_price, stock_symbol, stock_shortName) => {
     try {
-      console.log('token: ', token);
-      console.log('user: ', user.sub);
-      console.log('stock_id: ', stock_id);
-      console.log('stock_price: ', stock_price);
-      console.log('stock_symbol: ', stock_symbol);
-      console.log('stock_shortName: ', stock_shortName);
       const ipResponse = await axios.get('https://ipinfo.io/json?token=f27743517e5212');
       const location = ipResponse.data.country + ' - ' + ipResponse.data.region + ' - ' + ipResponse.data.city;
-  
-      const response = await axios.post('https://api.asyncfintech.me/buy', {
+
+      const response = await axios.post('https://nicostocks.me/buyIntention', {
         userId: user.sub,
         stockId: stock_id,
-        stockPrice: stock_price,
+        stockPrice: Math.round(stock_price),
         stockSymbol: stock_symbol,
         stockShortName: stock_shortName,
-        location: location,
+        location: location
       }, {
         timeout: 300000,
         headers: {
@@ -88,18 +85,19 @@ const Stocks = () => {
           'Authorization': `Bearer ${token}`
         },
       });
-  
       const result = response.data;
       if (result.success) {
-
-        setPopupMessage('Successfully bought stock!');
-        setShowPopup(true);
-        window.location.reload();
+        setTransbankToken(result.token);
+        navigate('/confirm-purchase', { state: { token: result.token, url: result.url, userId: user.sub, stockId: stock_id, stockPrice: stock_price, stockSymbol: stock_symbol, stockShortName: stock_shortName, location: location } });
+  
       } else {
+        console.log("Success error");
         setPopupMessage(result.message);
         setShowPopup(true);
       }
     } catch (error) {
+      console.log("Buy error");
+      console.log(error);
       setPopupMessage(error.message);
       setShowPopup(true);
     }
@@ -108,10 +106,11 @@ const Stocks = () => {
   useEffect(() => {
     const fetchStocks = async () => {
       try {
-        console.log('token: ', token);
         const response = await axios.get(
           'https://api.asyncfintech.me/stocks',
-          {
+          {params: {
+            size: 1
+          },
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -122,6 +121,7 @@ const Stocks = () => {
         setStocks(data);
         setIsLoading(false);
       } catch (error) {
+        console.log("Function error")
         setError(error);
         setIsLoading(false);
       }
@@ -157,27 +157,27 @@ const Stocks = () => {
     }
   }, [selectedStockSymbol, detailsPage]);
 
-const handleNext = async () => {
-    try {
-      const response = await axios.get(`https://api.asyncfintech.me/stocks`, {
-        params: {
-          page: page + 1,
-          size: 1
-        },
-        headers: {
-          Authorization: `Bearer ${token}`
+  const handleNext = async () => {
+      try {
+        const response = await axios.get(`https://api.asyncfintech.me/stocks`, {
+          params: {
+            page: detailsPage + 1,
+            size: 1
+          },
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        const data = response.data;
+        if (data.length > 0) {
+          setPage(prevPage => prevPage + 1);
+        } else {
+          setHasMoreStocks(false);
         }
-      });
-      const data = response.data;
-      if (data.length > 0) {
-        setPage(prevPage => prevPage + 1);
-      } else {
-        setHasMoreStocks(false);
+      } catch (error) {
+        setError(error);
       }
-    } catch (error) {
-      setError(error);
-    }
-  };
+    };
 
 const closePopup = () => {
     setShowPopup(false);

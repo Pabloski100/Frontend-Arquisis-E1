@@ -23,44 +23,43 @@ function My_stocks() {
   const [historicalData, setHistoricalData] = useState({});
   const [stocks, setStocks] = useState(null);
   const [user, setUser] = useState(null);
+  const [isApiCalled, setIsApiCalled] = useState(false);
 
   const cognitoUser = userPool.getCurrentUser();
   
   useEffect(() => {
-    if (cognitoUser !== null) {
-    cognitoUser.getSession((err, session) => {
-        if (err) {
-          alert(err.message || JSON.stringify(err));
-          return;
-        }
-        const newToken = session.getIdToken().getJwtToken();
-        console.log("token: ", newToken);
-        setToken(newToken);
-        const newUserDetails = session.getIdToken().payload;
-        setUser(newUserDetails);
-        console.log("user details: ", newUserDetails);
+    if (!isApiCalled) {
+      if (cognitoUser !== null) {
+        cognitoUser.getSession((err, session) => {
+          if (err) {
+            alert(err.message || JSON.stringify(err));
+            return;
+          }
+          const newToken = session.getIdToken().getJwtToken();
+          setToken(newToken);
+          const newUserDetails = session.getIdToken().payload;
+          setUser(newUserDetails);
 
-        console.log("user sub: ", newUserDetails.sub);
-
-        axios.get(`https://api.asyncfintech.me/getUser?auth0Id=${newUserDetails.sub}`, {
-        headers: {
-          'Authorization': `Bearer ${newToken}`
-        }
-      })
-      .then(response => {
-        if (response.data.success) {
-          setStocks(response.data.data.stocks)
-        } else {
-          console.error(response.data.message);
-        }
-      }).catch(error => {
-        console.error("API call failed:", error);
-      });
+          axios.get(`https://api.asyncfintech.me/getUser?auth0Id=${newUserDetails.sub}`, {
+            headers: {
+              'Authorization': `Bearer ${newToken}`
+            }
+          })
+          .then(response => {
+            if (response.data.success) {
+              setIsApiCalled(true);
+              setStocks(response.data.data.stocks);
+              console.log(response.data.data.stocks);
+            } else {
+              console.error(response.data.message);
+            }
+          }).catch(error => {
+            console.error("API call failed:", error);
+          });
+        });
       }
-    );
-  }
-  }
-  , []);
+    }
+  }, [setIsApiCalled, isApiCalled]);
 
   useEffect(() => {
     if (stocks) {
