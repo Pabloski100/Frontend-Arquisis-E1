@@ -1,29 +1,29 @@
+
 import React from 'react';
-import { Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLink } from '@fortawesome/free-solid-svg-icons'; // Import the icon object
-import styles from './componentsCss/content.module.css'; // Import the styles object from your CSS Module
+import { faLink } from '@fortawesome/free-solid-svg-icons';
+import styles from './componentsCss/content.module.css';
 
 import contentData from '../utils/contentData';
 
 const Content = () => (
-  <div className={styles['next-steps']} className={styles['my-5']} data-testid="content">
-    <h2 className={`${styles['my-5']} ${styles['text-center']}`} data-testid="content-title">
+  <div className={styles['next-steps']} data-testid="content">
+    <h2 className={[styles['my-5'], styles['text-center']].join(' ')} data-testid="content-title">
       More information:
     </h2>
-    <Row className={`${styles['d-flex']} ${styles['justify-content-between']}`} data-testid="content-items">
-      {contentData.map((col, i) => (
-        <Col key={i} md={5} className={styles['mb-4']}>
+    <div className={[styles['d-flex'], styles['justify-content-between']].join(' ')} data-testid="content-items">
+      {contentData.map(({ title, link, description }, i) => (
+        <div key={title || i} className={styles['content-item']}>
           <h6 className={styles['mb-3']}>
-            <a href={col.link}>
-              <FontAwesomeIcon icon={faLink} className={styles['mr-2']} />
-              {col.title}
+            <a href={link}>
+              <FontAwesomeIcon icon={faLink} className={styles['mr-2']} aria-hidden="true" />
+              {title}
             </a>
           </h6>
-          <p>{col.description}</p>
-        </Col>
+          <p>{description}</p>
+        </div>
       ))}
-    </Row>
+    </div>
   </div>
 );
 

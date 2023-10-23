@@ -31,13 +31,9 @@ export const Profile = () => {
           return;
         }
         const newToken = session.getIdToken().getJwtToken();
-        console.log("token: ", newToken);
         setToken(newToken);
         const newUserDetails = session.getIdToken().payload;
         setUser(newUserDetails);
-        console.log("user details: ", newUserDetails);
-
-        console.log("user sub: ", newUserDetails.sub);
 
         axios.get(`https://api.asyncfintech.me/getUser?auth0Id=${newUserDetails.sub}`, {
         headers: {

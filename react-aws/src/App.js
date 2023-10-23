@@ -8,6 +8,8 @@ import Home from "./views/Home";
 import Profile from "./views/Profile";
 import Stocks from "./views/Stocks";
 import MyStocks from "./views/MyStocks";
+import ConfirmPurchase from "./views/ConfirmPurchase";
+import PurchaseCompleted from "./views/PurchaseCompleted";
 import { SignUp } from "./aws/SignUp"; // Import SignUp
 import Login from "./aws/Login"; // Import Login
 
@@ -31,6 +33,8 @@ const App = () => {
             <Route path="/stocks" element={<Stocks />} />
             <Route path="/mystocks" element={<MyStocks />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/confirm-purchase" element={<ConfirmPurchase />} />
+            <Route path="/purchase-completed" element={<PurchaseCompleted />} />
           </Routes>
         </Container>
         <Footer />

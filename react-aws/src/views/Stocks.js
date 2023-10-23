@@ -25,11 +25,13 @@ const Stocks = () => {
   const [hasMoreStocks, setHasMoreStocks] = useState(true);
   const [hasMoreDetails, setHasMoreDetails] = useState(true);
   const [token, setToken] = useState(null);
+  const [transbankToken, setTransbankToken] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
   const [userData, setUserData] = useState(null);
   const [user, setUser] = useState(null);
 
+  const navigate = useNavigate();
   const cognitoUser = userPool.getCurrentUser();
 
   useEffect(() => {
@@ -66,28 +68,16 @@ const Stocks = () => {
 
   const handleBuyStock = async (stock_id, stock_price, stock_symbol, stock_shortName) => {
     try {
-      console.log('token: ', token);
-      console.log('user: ', user.sub);
-      console.log('stock_id: ', stock_id);
-      console.log('stock_price: ', stock_price);
-      console.log('stock_symbol: ', stock_symbol);
-      console.log('stock_shortName: ', stock_shortName);
-      console.log('user data: ', user.email)
-
-      console.log("antes")
-
       const ipResponse = await axios.get('https://ipinfo.io/json?token=f27743517e5212');
       const location = ipResponse.data.country + ' - ' + ipResponse.data.region + ' - ' + ipResponse.data.city;
 
-      console.log("despues")
-  
-      const response = await axios.post('https://api.asyncfintech.me/buy', {
+      const response = await axios.post('https://nicostocks.me/buyIntention', {
         userId: user.sub,
         stockId: stock_id,
-        stockPrice: stock_price,
+        stockPrice: Math.round(stock_price),
         stockSymbol: stock_symbol,
         stockShortName: stock_shortName,
-        location: location,
+        location: location
       }, {
         timeout: 300000,
         headers: {
@@ -95,44 +85,19 @@ const Stocks = () => {
           'Authorization': `Bearer ${token}`
         },
       });
-
-      console.log(response)
-
-      // const emailParams = {
-      //   from_name: "AsyncFintech",
-      //   to_name: user.name,
-      //   user_email: user.email,
-      //   stock_name: stock_shortName,
-      //   stock_price: stock_price,
-      //   buy_date: String(new Date()),
-      // }
-
-      // console.log("post params")
-      // const emailtest = await emailjs.send("service_t2n2ilp","template_b42hdfs", emailParams, 'nHk13LYZyg4X4xrvX');
-      // console.log(emailtest)
-  
       const result = response.data;
       if (result.success) {
-        setPopupMessage('Successfully bought stock!');
-        setShowPopup(true);
-        const emailParams = {
-          from_name: "AsyncFintech",
-          to_name: user.name,
-          user_email: user.email,
-          stock_name: stock_shortName,
-          stock_price: stock_price,
-          buy_date: String(new Date()),
-          }
-        emailjs.send("service_t2n2ilp","template_b42hdfs", emailParams, 'nHk13LYZyg4X4xrvX');
-        window.location.reload();
+        setTransbankToken(result.token);
+        navigate('/confirm-purchase', { state: { token: result.token, url: result.url, userId: user.sub, stockId: stock_id, stockPrice: stock_price, stockSymbol: stock_symbol, stockShortName: stock_shortName, location: location } });
+  
       } else {
-        console.log("Success error")
+        console.log("Success error");
         setPopupMessage(result.message);
         setShowPopup(true);
       }
     } catch (error) {
-      console.log("Buy error")
-      console.log(error)
+      console.log("Buy error");
+      console.log(error);
       setPopupMessage(error.message);
       setShowPopup(true);
     }
@@ -141,10 +106,11 @@ const Stocks = () => {
   useEffect(() => {
     const fetchStocks = async () => {
       try {
-        console.log('token: ', token);
         const response = await axios.get(
           'https://api.asyncfintech.me/stocks',
-          {
+          {params: {
+            size: 1
+          },
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -191,27 +157,27 @@ const Stocks = () => {
     }
   }, [selectedStockSymbol, detailsPage]);
 
-const handleNext = async () => {
-    try {
-      const response = await axios.get(`https://api.asyncfintech.me/stocks`, {
-        params: {
-          page: page + 1,
-          size: 1
-        },
-        headers: {
-          Authorization: `Bearer ${token}`
+  const handleNext = async () => {
+      try {
+        const response = await axios.get(`https://api.asyncfintech.me/stocks`, {
+          params: {
+            page: detailsPage + 1,
+            size: 1
+          },
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        const data = response.data;
+        if (data.length > 0) {
+          setPage(prevPage => prevPage + 1);
+        } else {
+          setHasMoreStocks(false);
         }
-      });
-      const data = response.data;
-      if (data.length > 0) {
-        setPage(prevPage => prevPage + 1);
-      } else {
-        setHasMoreStocks(false);
+      } catch (error) {
+        setError(error);
       }
-    } catch (error) {
-      setError(error);
-    }
-  };
+    };
 
 const closePopup = () => {
     setShowPopup(false);
