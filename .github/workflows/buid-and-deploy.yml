@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_S3_BUCKET: www.domingocarvajalads.me
-      DIST: /aws-react/build
+      DIST: build
       REGION: us-east-1
       DISTRIBUTION_ID: E2H58HKZ9PYWAX
     steps:
