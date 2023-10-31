@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col } from 'reactstrap';
-import styles from './viewsCss/myPredictions.module.css';
+import styles from './viewsCss/predictions.module.css';
 import ErrorMessage from '../components/ErrorMessage'
 import axios from 'axios';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
@@ -102,17 +102,72 @@ function My_predictions() {
 
   const renderPredictions = () => {
     if (!predictions) {
-      return <p className={styles.text}>No predictions available.</p>;
+      // return <p className={styles.text}>No predictions available.</p>;
+
     }
   
     const predictionGroups = {};
-  
-    predictions.forEach(prediction => {
-      if (!predictionGroups[prediction.symbol]) {
-        predictionGroups[prediction.stocksymbol] = [];
-      }
-      predictionGroups[prediction.stocksymbol].push(prediction);
+
+    // ---------------------------------------------
+
+    // Coment out this section when API is working
+
+    predictionGroups["AAPL"] = [];
+    predictionGroups["AMZN"] = [];
+
+    predictionGroups["AAPL"].push({
+      stockshortName: "Apple",
+      stocksymbol: "AAPL",
+      date: "2021-05-01T00:00:00.000Z",
+      value: 100,
+      status: "pending"
     });
+
+    predictionGroups["AAPL"].push({
+      stockshortName: "Apple",
+      stocksymbol: "AAPL",
+      date: "2021-05-01T00:00:00.000Z",
+      value: 100,
+      status: "pending"
+    });
+
+    predictionGroups["AMZN"].push({
+      stockshortName: "Amazon",
+      stocksymbol: "AMZN",
+      date: "2021-05-01T00:00:00.000Z",
+      value: 100,
+      status: "pending"
+    });
+
+    predictionGroups["AMZN"].push({
+      stockshortName: "Amazon",
+      stocksymbol: "AMZN",
+      date: "2021-05-01T00:00:00.000Z",
+      value: 100,
+      status: "pending"
+    });
+
+    // Comment out this section when API is working
+
+    // ---------------------------------------------
+
+
+   // ---------------------------------------------
+   
+   // Uncomment this section when API is working
+
+    // predictions.forEach(prediction => {
+    //   if (!predictionGroups[prediction.symbol]) {
+    //     predictionGroups[prediction.stocksymbol] = [];
+    //   }
+    //   predictionGroups[prediction.stocksymbol].push(prediction);
+    // });
+
+    // Uncomment this section when API is working
+
+    // ---------------------------------------------
+
+    
   
     return (
       <ul className={styles.predictionList}>
