@@ -12,6 +12,9 @@ jobs:
   build-and-deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read 
     env:
       AWS_S3_BUCKET: www.domingocarvajalads.me
       DIST: build
