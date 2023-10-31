@@ -5,37 +5,38 @@ on:
       - main
 jobs: 
   build-and-deploy:
-  runs-on: ubuntu-latest
-  env:
-    AWS_S3_BUCKET: www.domingocarvajalads.me
-    DIST: /aws-react/build
-    REGION: us-east-1
-    DISTRIBUTION_ID: E2H58HKZ9PYWAX
-  steps:
-  - name: Checkout Repository
-    uses: actions/checkout@v2
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    env:
+      AWS_S3_BUCKET: www.domingocarvajalads.me
+      DIST: /aws-react/build
+      REGION: us-east-1
+      DISTRIBUTION_ID: E2H58HKZ9PYWAX
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
 
-  - name: Configure AWS Credentials
-    uses: aws-actions/configure-aws-credentials@v1
-    with:
-      aws-access-key-id: AKIATV4NTLV4REAQTOJ5
-      aws-secret-access-key: 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
-      aws-region: ${{ env.REGION }}
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: AKIATV4NTLV4REAQTOJ5
+        aws-secret-access-key: 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
+        aws-region: ${{ env.REGION }}
 
-  - name: Install Dependencies
-    run: |
-      cd react-aws
-      npm install
+    - name: Install Dependencies
+      run: |
+        cd react-aws
+        npm install
 
-  - name: Build React Application
-    run: |
-      cd react-aws
-      npm run build
+    - name: Build React Application
+      run: |
+        cd react-aws
+        npm run build
 
-  - name: Copy Files to S3 Bucket
-    run: |
-      aws s3 sync ${{ env.DIST }} s3://${{ env.AWS_S3_BUCKET }} --delete
-  
-  - name: Update Cloudfront Distribution
-    run: |
-      aws cloudfront create-invalidation --distribution-id ${{ env.DISTRIBUTION_ID }} --paths "/*"
+    - name: Copy Files to S3 Bucket
+      run: |
+        aws s3 sync ${{ env.DIST }} s3://${{ env.AWS_S3_BUCKET }} --delete
+    
+    - name: Update Cloudfront Distribution
+      run: |
+        aws cloudfront create-invalidation --distribution-id ${{ env.DISTRIBUTION_ID }} --paths "/*"
