@@ -27,7 +27,7 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: arn:aws:iam::253163167097:role/DEPLOY-S3-ACTION
+        role-to-assume: arn:aws:iam::253163167097:role/S3-PIPELINE-FRONTEND
         aws-region: us-east-1
 
     - name: Install Dependencies
