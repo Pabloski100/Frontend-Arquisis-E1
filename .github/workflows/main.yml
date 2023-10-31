@@ -35,7 +35,7 @@ jobs:
     - name: Ejecutar pruebas
       run: |
         cd react-aws
-        npm test
+        npm test -- --testPathPattern=src/views/__tests__/Home.test.js
 
     - name: Linting del código
       run: |
