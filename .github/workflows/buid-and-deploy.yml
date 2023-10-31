@@ -36,7 +36,7 @@ jobs:
 
     - name: Copy Files to S3 Bucket
       run: |
-        aws s3 sync ${{ env.DIST }} s3://${{ env.AWS_S3_BUCKET }} --delete
+        aws s3 sync --delete ${{ env.DIST }} s3://${{ env.AWS_S3_BUCKET }}
     
     - name: Update Cloudfront Distribution
       run: |
