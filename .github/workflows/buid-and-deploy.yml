@@ -26,6 +26,7 @@ jobs:
     - name: Install Dependencies
       run: |
         cd react-aws
+        npm install --save-dev cross-env
         npm install
 
     - name: Build React Application
