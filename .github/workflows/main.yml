@@ -27,10 +27,16 @@ jobs:
         cd react-aws
         npm run build
 
-    - name: Run Unit Tests
-      run: |
-        cd react-aws/src
-        npm test
+    # - name: Run Unit Tests
+    #   run: |
+    #     cd react-aws/src
+    #     npm test
+
+    - name: Ejecutar pruebas
+      run: npm test
+
+    - name: Linting del código
+      run: npm run lint
 
     - name: TruffleHog Enterprise scan
       uses: trufflesecurity/TruffleHog-Enterprise-Github-Action@main
