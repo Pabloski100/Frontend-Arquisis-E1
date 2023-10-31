@@ -17,11 +17,10 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-access-key-id: AKIATV4NTLV4REAQTOJ5
-        aws-secret-access-key: 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
-        aws-region: ${{ env.REGION }}
+        role-to-assume: arn:aws:iam::253163167097:role/DEPLOY-S3-ACTION
+        aws-region: us-east-1
 
     - name: Install Dependencies
       run: |
