@@ -3,6 +3,11 @@ on:
   push:
     branches:
       - main
+
+permissions:
+  id-token: write
+  contents: read
+
 jobs: 
   build-and-deploy:
     name: Build and Deploy
@@ -13,8 +18,8 @@ jobs:
       REGION: us-east-1
       DISTRIBUTION_ID: E2H58HKZ9PYWAX
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
