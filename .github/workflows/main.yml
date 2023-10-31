@@ -14,28 +14,23 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 14 
-
-    # - name: Change Working Directory
-    #   run: cd Sample-01
-        
-    - name: Change Directory and Install Dependencies
+    - name: Install Dependencies
       run: |
-        cd Sample-01
+        cd react-aws
+        npm install --save-dev cross-env
         npm install
 
-    - name: Run Unit Tests
-      run: |  
-        cd Sample-01
-        npm test
+    - name: Build React Application
+      run: |
+        cd react-aws
+        npm run build
 
-    # - name: Check Code Formatting with Prettier
-    #   run: npm run prettier -- --check
+    - name: Run Unit Tests
+        run: |
+          cd react-aws/src
+          npm test
 
     - name: TruffleHog Enterprise scan
       uses: trufflesecurity/TruffleHog-Enterprise-Github-Action@main
