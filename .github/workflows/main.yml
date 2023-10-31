@@ -33,10 +33,14 @@ jobs:
     #     npm test
 
     - name: Ejecutar pruebas
-      run: npm test
+      run: |
+        cd react-aws
+        npm test
 
     - name: Linting del código
-      run: npm run lint
+      run: |
+        cd react-aws
+        npm run lint
 
     - name: TruffleHog Enterprise scan
       uses: trufflesecurity/TruffleHog-Enterprise-Github-Action@main
