@@ -6,6 +6,7 @@ import UserPhoto from '../utils/UserPhoto.png';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import { useNavigate } from "react-router-dom";
 import emailjs from '@emailjs/browser'
+import SimulateEarnings from './SimulateEarningsForm';
 
 const userPool = new CognitoUserPool({
   UserPoolId: process.env.REACT_APP_USERPOOL_ID,
@@ -30,6 +31,9 @@ const Stocks = () => {
   const [popupMessage, setPopupMessage] = useState('');
   const [userData, setUserData] = useState(null);
   const [user, setUser] = useState(null);
+  const [showSimulateEarningsView, setShowSimulateEarningsView] = useState(false);
+  const [simulateEarningsData, setSimulateEarningsData] = useState({});
+  const [showSimulateEarningsForm, setShowSimulateEarningsForm] = useState(false);
 
   const navigate = useNavigate();
   const cognitoUser = userPool.getCurrentUser();
@@ -68,9 +72,9 @@ const Stocks = () => {
 
   const handleBuyStock = async (stock_id, stock_price, stock_symbol, stock_shortName) => {
     try {
-      const ipResponse = await axios.get('https://ipinfo.io/json?token=f27743517e5212');
-      const location = ipResponse.data.country + ' - ' + ipResponse.data.region + ' - ' + ipResponse.data.city;
-      // const location = "Chile - Region Metropolitana - Santiago"; // Para test
+      // const ipResponse = await axios.get('https://ipinfo.io/json?token=f27743517e5212');
+      // const location = ipResponse.data.country + ' - ' + ipResponse.data.region + ' - ' + ipResponse.data.city;
+      const location = "Chile - Region Metropolitana - Santiago"; // Para test
 
       const response = await axios.post('https://nicostocks.me/buyIntention', {
         userId: user.sub,
@@ -102,6 +106,56 @@ const Stocks = () => {
       setPopupMessage(error.message);
       setShowPopup(true);
     }
+  };
+
+  const handleSimulateEarnings = async (stock_id, stock_price, stock_symbol, stock_shortName) => {
+    // try {
+    //   console.log("Simulate earnings");
+    //   console.log(stock_id);
+    //   console.log(stock_price);
+    //   console.log(stock_symbol);
+    //   console.log(stock_shortName);
+    //   // const ipResponse = await axios.get('https://ipinfo.io/json?token=f27743517e5212');
+    //   // const location = ipResponse.data.country + ' - ' + ipResponse.data.region + ' - ' + ipResponse.data.city;
+    //   // // const location = "Chile - Region Metropolitana - Santiago"; // Para test
+
+    //   const response = await axios.post('https://api.asyncfintech.me/simulateEarning', {
+    //     userId: user.sub,
+    //     stockSymbol: stock_symbol,
+    //   }, {
+    //     timeout: 300000,
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'Authorization': `Bearer ${token}`
+    //     },
+    //   });
+    //   // const result = response.data;
+    //   // if (result.success) {
+    //   //   setTransbankToken(result.token);
+    //   //   navigate('/confirm-purchase', { state: { token: result.token, url: result.url, userId: user.sub, stockId: stock_id, stockPrice: stock_price, stockSymbol: stock_symbol, stockShortName: stock_shortName, location: location } });
+  
+    //   // } else {
+    //   //   console.log("Success error");
+    //   //   setPopupMessage(result.message);
+    //   //   setShowPopup(true);
+    //   // }
+    // } catch (error) {
+    //   console.log("Simulate earnings error");
+    //   console.log(error);
+    //   setPopupMessage(error.message);
+    //   setShowPopup(true);
+    // }
+    // Guardar los valores y otros detalles necesarios en el estado
+    // Guarda los detalles del stock en el estado
+    setSelectedStockSymbol(stock_symbol);
+    setShowSimulateEarningsView(true);
+    // Pasa los valores necesarios como propiedades al componente SimulateEarnings
+    setSimulateEarningsData({
+      stock_id,
+      stock_price,
+      stock_symbol,
+      stock_shortName,
+    });
   };
 
   useEffect(() => {
@@ -226,6 +280,15 @@ const handleDetailsNext = async () => {
     setViewHistory(false);
   };
 
+
+  if (showSimulateEarningsView) {
+    return (
+      <SimulateEarnings
+        simulateEarningsData={simulateEarningsData} // Pasa los datos como propiedades
+      />
+    );
+  }
+
   return (
     <div className={styles.container}>
       <h1 className={styles.header}>Stocks</h1>
@@ -293,12 +356,20 @@ const handleDetailsNext = async () => {
               <p>Id: {detail.stock_id}</p>
               <p>Is purchased?: {new String(detail.isBought).toUpperCase()}</p>
               {!detail.isBought && (
-                <button
-                  className={styles.buyStockButton}
-                  onClick={() => handleBuyStock(detail.stock_id, detail.price, detail.symbol, detail.shortName)}
-                >
-                  Buy Stock
-                </button>
+                <div className={styles.buttonContainer}>
+                  <button
+                    className={styles.buyStockButton}
+                    onClick={() => handleBuyStock(detail.stock_id, detail.price, detail.symbol, detail.shortName)}
+                  >
+                    Buy Stock
+                  </button>
+                  <button
+                    className={styles.buyStockButton}
+                    onClick={() => handleSimulateEarnings(detail.stock_id, detail.price, detail.symbol, detail.shortName)}
+                  >
+                    Simulate Earnings
+                  </button>
+                </div>
               )}
               {detail.isBought && (
                 <button

@@ -11,7 +11,7 @@ const Hero = () => (
     </div>
     <div className={styles.hero} className={styles['my-5']} className={styles['text-center']} data-testid="hero" style={{ maxWidth: '800px', margin: '0 auto' }}>
       <h1 className={styles['mb-4']} data-testid="hero-title">
-        EquityEmpire: Your Gateway to the Stock Market
+        EquityEmpire v2: Your Gateway to the Stock Market
       </h1>
       <p className={styles.lead} data-testid="hero-lead">
         Welcome to EquityEmpire, the premier platform for exploring, seeing, and buying stocks with ease and confidence.

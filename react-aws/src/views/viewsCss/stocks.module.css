@@ -84,9 +84,27 @@
   background-color: #0056b3;
 }
 
+.buttonContainer {
+  display: flex; /* Make the buttons display horizontally */
+  justify-content: center; /* Center the buttons horizontally */
+  align-items: center; /* Center the buttons vertically */
+}
+
 .buyStockButton {
-  margin-bottom: 20px;
+  /* css nico */
+
+  /* margin-bottom: 20px;
   margin-left: 14rem;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007BFF;
+  color: #fff;
+  cursor: pointer; */
+
+  /* css domingo */
+  margin: 0 5px; /* Add some margin to separate the buttons */
   padding: 10px 20px;
   font-size: 16px;
   border: none;
