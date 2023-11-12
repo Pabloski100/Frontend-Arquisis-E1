@@ -14,7 +14,7 @@ const userPool = new CognitoUserPool({
 const SimulateEarnings = ({ simulateEarningsData }) => {
     const { stock_id, stock_price, stock_symbol, stock_shortName } = simulateEarningsData;
     const [quantity, setQuantity] = useState(0);
-    const [time, setTime] = useState(0);
+    const [tiempoInversion, setTiempoInversion] = useState(0);
     const [results, setResults] = useState(null);
     const [user, setUser] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
@@ -71,14 +71,14 @@ const SimulateEarnings = ({ simulateEarningsData }) => {
 				console.log(stock_symbol);
 				console.log(stock_shortName);
 				console.log(quantity);
-				console.log(time);
+				console.log(tiempoInversion);
 			
 
-				const response = await axios.post('https://api.asyncfintech.me/job', {
+				const response = await axios.post('https://nicostocks.me/job', {
 					userId: user.sub,
-					quantity: quantity,
-					time: time,
-					stockSymbol: stock_symbol,
+					nAccionesCompra: quantity,
+					tiempoInversion : tiempoInversion,
+					symbol: stock_symbol,
 				}, {
 					timeout: 300000,
 					headers: {
@@ -86,33 +86,7 @@ const SimulateEarnings = ({ simulateEarningsData }) => {
 						'Authorization': `Bearer ${token}`
 					},
 				});
-				// const result = response.data;
-				// if (result.success) {
-				//   setTransbankToken(result.token);
-				//   navigate('/confirm-purchase', { state: { token: result.token, url: result.url, userId: user.sub, stockId: stock_id, stockPrice: stock_price, stockSymbol: stock_symbol, stockShortName: stock_shortName, location: location } });
-		
-				// } else {
-				//   console.log("Success error");
-				//   setPopupMessage(result.message);
-				//   setShowPopup(true);
-				// }
-			} catch (error) {
-				console.log("Simulate earnings error");
-				console.log(error);
-				setPopupMessage(error.message);
-				setShowPopup(true);
-			}
-		};
 
-		const testhandleSimulateEarnings = async () => {
-			try {
-				console.log("Simulate earnings");
-				console.log(stock_id);
-				console.log(stock_price);
-				console.log(stock_symbol);
-				console.log(stock_shortName);
-				console.log(quantity);
-				console.log(time);
 			} catch (error) {
 				console.log("Simulate earnings error");
 				console.log(error);
@@ -178,14 +152,14 @@ const SimulateEarnings = ({ simulateEarningsData }) => {
                 />
               </div>
 							<div className={styles.depositField}>
-                <label htmlFor="time" className={styles.label}>
-                  Cantidad de acciones:
+                <label htmlFor="tiempoInversion" className={styles.label}>
+                  Tiempo de inversion (en dias):
                 </label>
                 <input
-                  id="time"
+                  id="tiempoInversion"
                   type="number"
-									value={time}
-									onChange={(e) => setTime(e.target.value)}
+									value={tiempoInversion}
+									onChange={(e) => setTiempoInversion(e.target.value)}
                   className="form-control"
                 />
               </div>

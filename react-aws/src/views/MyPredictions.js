@@ -32,7 +32,7 @@ function My_predictions() {
           const newUserDetails = session.getIdToken().payload;
           setUser(newUserDetails);
 
-          axios.get(`https://api.asyncfintech.me/getUser?auth0Id=${newUserDetails.sub}`, {
+          axios.get(`https://nicostocks.me/getUser?auth0Id=${newUserDetails.sub}`, {
             headers: {
               'Authorization': `Bearer ${newToken}`
             }
@@ -66,6 +66,7 @@ function My_predictions() {
   // }, [predictions]);  
 
   useEffect(() => {
+    console.log("Predictions: ", predictions);
     if (predictions) {
       const fetchAllPredictions = async () => {
         const allPromises = fetchPredictions();
@@ -78,7 +79,8 @@ function My_predictions() {
 
   const fetchPredictions = async () => {
     try {
-      const response = await axios.get(`https://api.asyncfintech.me/predictions`, {
+      console.log("Haciendo llamada a la API");
+      const response = await axios.get(`https://nicostocks.me/predictions`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -102,7 +104,7 @@ function My_predictions() {
 
   const renderPredictions = () => {
     if (!predictions) {
-      // return <p className={styles.text}>No predictions available.</p>;
+      return <p className={styles.text}>No predictions available.</p>;
 
     }
   
@@ -112,40 +114,40 @@ function My_predictions() {
 
     // Coment out this section when API is working
 
-    predictionGroups["AAPL"] = [];
-    predictionGroups["AMZN"] = [];
+    // predictionGroups["AAPL"] = [];
+    // predictionGroups["AMZN"] = [];
 
-    predictionGroups["AAPL"].push({
-      stockshortName: "Apple",
-      stocksymbol: "AAPL",
-      date: "2021-05-01T00:00:00.000Z",
-      value: 100,
-      status: "pending"
-    });
+    // predictionGroups["AAPL"].push({
+    //   stockshortName: "Apple",
+    //   stocksymbol: "AAPL",
+    //   date: "2021-05-01T00:00:00.000Z",
+    //   value: 100,
+    //   status: "pending"
+    // });
 
-    predictionGroups["AAPL"].push({
-      stockshortName: "Apple",
-      stocksymbol: "AAPL",
-      date: "2021-05-01T00:00:00.000Z",
-      value: 100,
-      status: "pending"
-    });
+    // predictionGroups["AAPL"].push({
+    //   stockshortName: "Apple",
+    //   stocksymbol: "AAPL",
+    //   date: "2021-05-01T00:00:00.000Z",
+    //   value: 100,
+    //   status: "pending"
+    // });
 
-    predictionGroups["AMZN"].push({
-      stockshortName: "Amazon",
-      stocksymbol: "AMZN",
-      date: "2021-05-01T00:00:00.000Z",
-      value: 100,
-      status: "pending"
-    });
+    // predictionGroups["AMZN"].push({
+    //   stockshortName: "Amazon",
+    //   stocksymbol: "AMZN",
+    //   date: "2021-05-01T00:00:00.000Z",
+    //   value: 100,
+    //   status: "pending"
+    // });
 
-    predictionGroups["AMZN"].push({
-      stockshortName: "Amazon",
-      stocksymbol: "AMZN",
-      date: "2021-05-01T00:00:00.000Z",
-      value: 100,
-      status: "pending"
-    });
+    // predictionGroups["AMZN"].push({
+    //   stockshortName: "Amazon",
+    //   stocksymbol: "AMZN",
+    //   date: "2021-05-01T00:00:00.000Z",
+    //   value: 100,
+    //   status: "pending"
+    // });
 
     // Comment out this section when API is working
 
@@ -156,12 +158,12 @@ function My_predictions() {
    
    // Uncomment this section when API is working
 
-    // predictions.forEach(prediction => {
-    //   if (!predictionGroups[prediction.symbol]) {
-    //     predictionGroups[prediction.stocksymbol] = [];
-    //   }
-    //   predictionGroups[prediction.stocksymbol].push(prediction);
-    // });
+    predictions.forEach(prediction => {
+      if (!predictionGroups[prediction.symbol]) {
+        predictionGroups[prediction.stocksymbol] = [];
+      }
+      predictionGroups[prediction.stocksymbol].push(prediction);
+    });
 
     // Uncomment this section when API is working
 

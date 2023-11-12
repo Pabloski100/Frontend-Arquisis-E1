@@ -40,7 +40,7 @@ function My_stocks() {
           const newUserDetails = session.getIdToken().payload;
           setUser(newUserDetails);
 
-          axios.get(`https://api.asyncfintech.me/getUser?auth0Id=${newUserDetails.sub}`, {
+          axios.get(`https://nicostocks.me/getUser?auth0Id=${newUserDetails.sub}`, {
             headers: {
               'Authorization': `Bearer ${newToken}`
             }
@@ -79,7 +79,7 @@ function My_stocks() {
 
   const fetchAllStockHistory = async (symbol, page = 1, size = 25, allData = []) => {
     try {
-      const response = await axios.get(`https://api.asyncfintech.me/stocks/${symbol}?page=${page}&size=${size}`, {
+      const response = await axios.get(`https://nicostocks.me/stocks/${symbol}?page=${page}&size=${size}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
