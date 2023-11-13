@@ -46,6 +46,7 @@ function My_stocks() {
             }
           })
           .then(response => {
+            console.log(response.data.data);
             if (response.data.success) {
               setIsApiCalled(true);
               setStocks(response.data.data.stocks);
@@ -62,6 +63,7 @@ function My_stocks() {
   }, [setIsApiCalled, isApiCalled]);
 
   useEffect(() => {
+    console.log(stocks);
     if (stocks) {
       const fetchAllHistories = async () => {
         const uniqueSymbols = [...new Set(stocks.map(stock => stock.stockSymbol))];
@@ -78,6 +80,8 @@ function My_stocks() {
   }, [stocks]);  
 
   const fetchAllStockHistory = async (symbol, page = 1, size = 25, allData = []) => {
+    // Test
+    console.log(`Fetching ${symbol} page ${page} size ${size}`)
     try {
       const response = await axios.get(`https://nicostocks.me/stocks/${symbol}?page=${page}&size=${size}`, {
         headers: {

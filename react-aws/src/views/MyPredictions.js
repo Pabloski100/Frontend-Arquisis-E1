@@ -29,10 +29,11 @@ function My_predictions() {
           }
           const newToken = session.getIdToken().getJwtToken();
           setToken(newToken);
+          console.log(token);
           const newUserDetails = session.getIdToken().payload;
           setUser(newUserDetails);
 
-          axios.get(`https://nicostocks.me/getUser?auth0Id=${newUserDetails.sub}`, {
+          axios.get(`https://api.asyncfintech.me/getUser?auth0Id=${newUserDetails.sub}`, {
             headers: {
               'Authorization': `Bearer ${newToken}`
             }
@@ -40,8 +41,8 @@ function My_predictions() {
           .then(response => {
             if (response.data.success) {
               setIsApiCalled(true);
-              setPredictions(response.data.data.predictions);
-              console.log(response.data.data.predictions);
+              // setPredictions(response.data.data.predictions);
+              // console.log(response.data.data.predictions);
             } else {
               console.error(response.data.message);
             }
@@ -51,45 +52,25 @@ function My_predictions() {
         });
       }
     }
-  }, [setIsApiCalled, isApiCalled]);
-
-  // useEffect(() => {
-  //   if (predictions) {
-  //     const fetchAllPredictions = async () => {
-  //       const allPromises = fetchPredictions();
-  //       const allData = await Promise.all(allPromises);
-
-  //       setHistoricalData(newHistoricalData);
-  //     };
-  //     fetchAllHistories();
-  //   }
-  // }, [predictions]);  
+  }, [setIsApiCalled, isApiCalled, token, setToken]);
 
   useEffect(() => {
-    console.log("Predictions: ", predictions);
-    if (predictions) {
-      const fetchAllPredictions = async () => {
-        const allPromises = fetchPredictions();
-        const allData = await Promise.all(allPromises);
-      };
-      fetchAllPredictions();
-    } 
-  }, [predictions]);
+    // Configuración del encabezado con el token de portador
+    const headers = {
+      Authorization: `Bearer ${token}`
+    };
 
-
-  const fetchPredictions = async () => {
-    try {
-      console.log("Haciendo llamada a la API");
-      const response = await axios.get(`https://nicostocks.me/predictions`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+    // Realizar la solicitud GET a la API con el encabezado
+    axios.get('https://nicostocks.me/prediction', { headers })
+      .then(response => {
+        // Actualizar el estado con los datos de la respuesta
+        console.log(response.data);
+        setPredictions(response.data);
+      })
+      .catch(error => {
+        console.error('Error al obtener predicciones:', error);
       });
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-  };
+  }, [token]);
 
   const formatDate = dateString => {
     const dateObj = new Date(dateString);
@@ -103,74 +84,24 @@ function My_predictions() {
   };
 
   const renderPredictions = () => {
+
     if (!predictions) {
       return <p className={styles.text}>No predictions available.</p>;
 
     }
+    console.log(user.sub);
   
     const predictionGroups = {};
 
-    // ---------------------------------------------
+    predictions
+      .filter(prediction => prediction.userId === user.sub) // Filtra las predicciones por userId igual a user.sub
+      .forEach(prediction => {
+        if (!predictionGroups[prediction.symbol]) {
+          predictionGroups[prediction.symbol] = [];
+        }
+        predictionGroups[prediction.symbol].push(prediction);
+      });
 
-    // Coment out this section when API is working
-
-    // predictionGroups["AAPL"] = [];
-    // predictionGroups["AMZN"] = [];
-
-    // predictionGroups["AAPL"].push({
-    //   stockshortName: "Apple",
-    //   stocksymbol: "AAPL",
-    //   date: "2021-05-01T00:00:00.000Z",
-    //   value: 100,
-    //   status: "pending"
-    // });
-
-    // predictionGroups["AAPL"].push({
-    //   stockshortName: "Apple",
-    //   stocksymbol: "AAPL",
-    //   date: "2021-05-01T00:00:00.000Z",
-    //   value: 100,
-    //   status: "pending"
-    // });
-
-    // predictionGroups["AMZN"].push({
-    //   stockshortName: "Amazon",
-    //   stocksymbol: "AMZN",
-    //   date: "2021-05-01T00:00:00.000Z",
-    //   value: 100,
-    //   status: "pending"
-    // });
-
-    // predictionGroups["AMZN"].push({
-    //   stockshortName: "Amazon",
-    //   stocksymbol: "AMZN",
-    //   date: "2021-05-01T00:00:00.000Z",
-    //   value: 100,
-    //   status: "pending"
-    // });
-
-    // Comment out this section when API is working
-
-    // ---------------------------------------------
-
-
-   // ---------------------------------------------
-   
-   // Uncomment this section when API is working
-
-    predictions.forEach(prediction => {
-      if (!predictionGroups[prediction.symbol]) {
-        predictionGroups[prediction.stocksymbol] = [];
-      }
-      predictionGroups[prediction.stocksymbol].push(prediction);
-    });
-
-    // Uncomment this section when API is working
-
-    // ---------------------------------------------
-
-    
-  
     return (
       <ul className={styles.predictionList}>
         {Object.keys(predictionGroups).map((symbol, index) => (
@@ -178,12 +109,11 @@ function My_predictions() {
             <h1 className={styles.header}>Predictions of {symbol} that you own</h1>
             {predictionGroups[symbol].map((prediction, subIndex) => (
               <div key={subIndex}>
-                <h2 className={styles.header}>Prediction {subIndex + 1}</h2>
-                <p className={styles.text}>Company: {prediction.stockshortName}</p>
-                <p className={styles.text}>Symbol: {prediction.stocksymbol}</p>
-                <p className={styles.text}>Date: {formatDate(prediction.date)}</p>
-                <p className={styles.text}>Value: {prediction.value}</p>
-                <p className={styles.text}>Status: {prediction.status}</p>
+                <p className={styles.text}>Prediction {subIndex + 1}</p>
+                <p className={styles.text}>Symbol: {prediction.symbol}</p>
+                <p className={styles.text}>Earnings: {prediction.ganancia}</p>
+                <p className={styles.text}>Time of Investment: {prediction.tiempoInversionDias}</p>
+                <p className={styles.text}>Status: Ready</p>
               </div>
             ))}
           </div>

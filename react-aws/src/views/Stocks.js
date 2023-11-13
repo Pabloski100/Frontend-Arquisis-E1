@@ -72,9 +72,9 @@ const Stocks = () => {
 
   const handleBuyStock = async (stock_id, stock_price, stock_symbol, stock_shortName) => {
     try {
-      const ipResponse = await axios.get('https://ipinfo.io/json?token=f27743517e5212');
-      const location = ipResponse.data.country + ' - ' + ipResponse.data.region + ' - ' + ipResponse.data.city;
-      // const location = "Chile - Region Metropolitana - Santiago"; // Para test
+      // const ipResponse = await axios.get('https://ipinfo.io/json?token=f27743517e5212');
+      // const location = ipResponse.data.country + ' - ' + ipResponse.data.region + ' - ' + ipResponse.data.city;
+      const location = "Chile - Region Metropolitana - Santiago"; // Para test
 
       const response = await axios.post('https://nicostocks.me/buyIntention', {
         userId: user.sub,

@@ -22,6 +22,7 @@ const SimulateEarnings = ({ simulateEarningsData }) => {
     const [token, setToken] = useState(null);
     const [error, setError] = useState(null);
     const [userData, setUserData] = useState(null);
+		const [simulationStatus, setSimulationStatus] = useState('idle');
 
     const navigate = useNavigate();
     const cognitoUser = userPool.getCurrentUser();
@@ -63,6 +64,10 @@ const SimulateEarnings = ({ simulateEarningsData }) => {
 			handleSimulateEarnings();
 		};
 
+		const closePopup = () => {
+			setShowPopup(false);
+		};
+
 		const handleSimulateEarnings = async () => {
 			try {
 				console.log("Simulate earnings");
@@ -74,7 +79,7 @@ const SimulateEarnings = ({ simulateEarningsData }) => {
 				console.log(tiempoInversion);
 			
 
-				const response = await axios.post('https://nicostocks.me/job', {
+				const response = await axios.post('https://api.asyncfintech.me/job', {
 					userId: user.sub,
 					nAccionesCompra: quantity,
 					tiempoInversion : tiempoInversion,
@@ -87,50 +92,22 @@ const SimulateEarnings = ({ simulateEarningsData }) => {
 					},
 				});
 
+
+				setSimulationStatus('success');
+				
+
 			} catch (error) {
 				console.log("Simulate earnings error");
 				console.log(error);
 				setPopupMessage(error.message);
 				setShowPopup(true);
+				setSimulationStatus('error');
+				console.log("popupMessage");
 			}
 		};
 
 
   return (
-    // <div className={styles.profileContainer}>
-		// 	<div className={styles.depositSection}>
-    //   <h2>Simulate Earnings</h2>
-    //   <form onSubmit={handleSubmit}>
-		// 		<div className={styles.depositField}>
-		// 			<label>
-		// 				Cantidad de acciones:
-		// 				<input
-		// 					type="number"
-		// 					value={quantity}
-		// 					onChange={(e) => setQuantity(e.target.value)}
-		// 				/>
-		// 			</label>
-		// 		</div>
-    //     <br />
-    //     <label>
-    //       Tiempo de ahorro (en semanas):
-    //       <input
-    //         type="number"
-    //         value={time}
-    //         onChange={(e) => setTime(e.target.value)}
-    //       />
-    //     </label>
-    //     <br />
-    //     <button type="submit">Simulate</button>
-    //   </form>
-    //   {results && (
-    //     <div>
-    //       <h3>Simulation Results:</h3>
-    //       {/* Mostrar los resultados aquí */}
-    //     </div>
-    //   )}
-		// 	</div>
-    // </div>
 		<div className={styles.profileContainer}>
           <Row className={styles.profileHeader}>
             <Col md>
@@ -166,6 +143,27 @@ const SimulateEarnings = ({ simulateEarningsData }) => {
               <button onClick={handleSubmit} className={`btn btn-primary mt-2 ${styles.depositButton}`}>
                 Simulate
               </button>
+
+							{/* Renderizar el contenido según el estado de la simulación */}
+							{simulationStatus === 'success' && (
+								<div>
+									<h3>¡Simulación exitosa!</h3>
+									{/* Puedes agregar más contenido aquí */}
+								</div>
+							)}
+
+							{simulationStatus === 'error' && (
+								<div>
+									<h3>¡La simulación falló!</h3>
+									{/* Puedes agregar más contenido aquí */}
+								</div>
+							)}
+
+							{simulationStatus === 'idle' && (
+								<div>
+									{/* Contenido predeterminado si no se ha realizado ninguna simulación */}
+								</div>
+							)}
             </Col>
           </Row>
         </div>
