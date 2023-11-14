@@ -36,7 +36,7 @@ Esta función se activa cuando un usuario decide comprar una acción.
 
 1. **Obtener la ubicación del usuario**: Se hace una solicitud GET a `https://ipinfo.io/json?token=f27743517e5212` para obtener la ubicación del usuario.
 
-2. **Enviar intención de compra al backend**: Se realiza una solicitud POST a `https://nicostocks.me/buyIntention` con detalles como el ID del usuario, el ID de la acción, el precio, etc.
+2. **Enviar intención de compra al backend**: Se realiza una solicitud POST a `https://api.asyncfintech.me/buyIntention` con detalles como el ID del usuario, el ID de la acción, el precio, etc.
 
 3. **Navegar a la confirmación**: Si la solicitud es exitosa, el usuario es redirigido a `/confirm-purchase` con los detalles de la transacción.
 

@@ -76,7 +76,7 @@ const Stocks = () => {
       // const location = ipResponse.data.country + ' - ' + ipResponse.data.region + ' - ' + ipResponse.data.city;
       const location = "Chile - Region Metropolitana - Santiago"; // Para test
 
-      const response = await axios.post('https://nicostocks.me/buyIntention', {
+      const response = await axios.post('https://api.asyncfintech.me/buyIntention', {
         userId: user.sub,
         stockId: stock_id,
         stockPrice: Math.round(stock_price),

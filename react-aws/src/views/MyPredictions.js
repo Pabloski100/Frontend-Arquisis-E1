@@ -61,7 +61,7 @@ function My_predictions() {
     };
 
     // Realizar la solicitud GET a la API con el encabezado
-    axios.get('https://nicostocks.me/prediction', { headers })
+    axios.get('https://api.asyncfintech.me/prediction', { headers })
       .then(response => {
         // Actualizar el estado con los datos de la respuesta
         console.log(response.data);
