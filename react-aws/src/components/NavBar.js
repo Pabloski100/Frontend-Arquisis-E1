@@ -22,7 +22,7 @@ const Navbar = () => {
     if (cognitoUser != null) {
       cognitoUser.signOut();
     }
-
+    
     navigate("/");
     window.location.reload();
   };
@@ -32,6 +32,7 @@ const Navbar = () => {
     { to: '/stocks', label: 'Stocks' },
     { to: '/mystocks', label: 'My Stocks' },
     { to: '/mypredictions', label: 'My Predictions' },
+    { to: '/groupstocks', label: 'Group Stocks' },
     { to: '/', label: 'Sign Out', action: signOut }
   ];
 

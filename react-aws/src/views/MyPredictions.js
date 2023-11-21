@@ -10,7 +10,6 @@ const userPool = new CognitoUserPool({
   ClientId: process.env.REACT_APP_APPCLIENT_ID,
 });
 
-
 function My_predictions() {
   const [token, setToken] = useState(null);
   const [predictions, setPredictions] = useState(null);
@@ -41,8 +40,6 @@ function My_predictions() {
           .then(response => {
             if (response.data.success) {
               setIsApiCalled(true);
-              // setPredictions(response.data.data.predictions);
-              // console.log(response.data.data.predictions);
             } else {
               console.error(response.data.message);
             }
@@ -52,25 +49,25 @@ function My_predictions() {
         });
       }
     }
-  }, [setIsApiCalled, isApiCalled, token, setToken]);
+  }, [setToken, token, isApiCalled, setIsApiCalled]);
 
   useEffect(() => {
-    // Configuración del encabezado con el token de portador
-    const headers = {
-      Authorization: `Bearer ${token}`
-    };
-
-    // Realizar la solicitud GET a la API con el encabezado
-    axios.get('https://api.asyncfintech.me/prediction', { headers })
-      .then(response => {
-        // Actualizar el estado con los datos de la respuesta
-        console.log(response.data);
-        setPredictions(response.data);
+    if (user && token) {
+      // Realizar la solicitud GET a la API con el encabezado
+      axios.get('https://api.asyncfintech.me/prediction', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       })
-      .catch(error => {
-        console.error('Error al obtener predicciones:', error);
-      });
-  }, [token]);
+        .then(response => {
+          console.log(response.data);
+          setPredictions(response.data);
+        })
+        .catch(error => {
+          console.error('Error al obtener predicciones:', error);
+        });
+    }
+  }, [token, user]);
 
   const formatDate = dateString => {
     const dateObj = new Date(dateString);
@@ -121,8 +118,6 @@ function My_predictions() {
       </ul>
     );
   };  
-
-  
 
   return (
     <>
