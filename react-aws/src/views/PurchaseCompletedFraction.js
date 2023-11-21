@@ -11,7 +11,7 @@ const userPool = new CognitoUserPool({
   ClientId: process.env.REACT_APP_APPCLIENT_ID,
 });
 
-const PurchaseCompleted = () => {
+const PurchaseCompletedFraction = () => {
   const location = useLocation();
   const [transactionDetails, setTransactionDetails] = useState(null);
   const [error, setError] = useState(null);
@@ -56,12 +56,11 @@ const PurchaseCompleted = () => {
   , [user]);
 
   useEffect(() => {
-    //console.log('useEffect is running. Location:', location, 'User:', user, 'UserData:', userData, 'isPostSent:', isPostSent);
     if (!isPostSent && user) {
       const token_ws = new URLSearchParams(location.search).get('token_ws');
 
       if (token_ws) {
-        axios.post('https://api.asyncfintech.me/confirm-purchase', {
+        axios.post('https://nicostocks.me/confirm-purchase-fraction', {
           token_ws,
         }, {
           headers: {
@@ -134,4 +133,4 @@ const PurchaseCompleted = () => {
   );
 };
 
-export default PurchaseCompleted;
+export default PurchaseCompletedFraction;

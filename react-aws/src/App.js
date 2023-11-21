@@ -11,6 +11,9 @@ import MyStocks from "./views/MyStocks";
 import MyPredictions from "./views/MyPredictions";
 import ConfirmPurchase from "./views/ConfirmPurchase";
 import PurchaseCompleted from "./views/PurchaseCompleted";
+import ConfirmPurchaseFraction from "./views/ConfirmPurchaseFraction";
+import PurchaseCompletedFraction from "./views/PurchaseCompletedFraction";
+import GroupStocks from "./views/GroupStocks";
 import { SignUp } from "./aws/SignUp"; // Import SignUp
 import Login from "./aws/Login"; // Import Login
 
@@ -37,6 +40,9 @@ const App = () => {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/confirm-purchase" element={<ConfirmPurchase />} />
             <Route path="/purchase-completed" element={<PurchaseCompleted />} />
+            <Route path="/groupstocks" element={<GroupStocks />} />
+            <Route path="/confirm-purchase-fraction" element={<ConfirmPurchaseFraction />} />
+            <Route path="/purchase-completed-fraction" element={<PurchaseCompletedFraction />} />
           </Routes>
         </Container>
         <Footer />

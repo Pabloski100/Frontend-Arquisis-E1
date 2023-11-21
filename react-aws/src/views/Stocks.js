@@ -34,6 +34,7 @@ const Stocks = () => {
   const [showSimulateEarningsView, setShowSimulateEarningsView] = useState(false);
   const [simulateEarningsData, setSimulateEarningsData] = useState({});
   const [showSimulateEarningsForm, setShowSimulateEarningsForm] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const navigate = useNavigate();
   const cognitoUser = userPool.getCurrentUser();
@@ -49,6 +50,10 @@ const Stocks = () => {
         setToken(newToken);
         const newUserDetails = session.getIdToken().payload;
         setUser(newUserDetails);
+        
+        if (newUserDetails['cognito:groups'] && newUserDetails['cognito:groups'].includes('Admin')) {
+          setIsAdmin(true);
+        }
 
         axios.get(`https://api.asyncfintech.me/getUser?auth0Id=${newUserDetails.sub}`, {
         headers: {
@@ -108,43 +113,53 @@ const Stocks = () => {
     }
   };
 
-  const handleSimulateEarnings = async (stock_id, stock_price, stock_symbol, stock_shortName) => {
-    // try {
-    //   console.log("Simulate earnings");
-    //   console.log(stock_id);
-    //   console.log(stock_price);
-    //   console.log(stock_symbol);
-    //   console.log(stock_shortName);
-    //   // const ipResponse = await axios.get('https://ipinfo.io/json?token=f27743517e5212');
-    //   // const location = ipResponse.data.country + ' - ' + ipResponse.data.region + ' - ' + ipResponse.data.city;
-    //   // // const location = "Chile - Region Metropolitana - Santiago"; // Para test
+  const handleBuyStockGroup = async (stock_id, stock_price, stock_symbol, stock_shortName, userId) => {
+    try {
 
-    //   const response = await axios.post('https://api.asyncfintech.me/simulateEarning', {
-    //     userId: user.sub,
-    //     stockSymbol: stock_symbol,
-    //   }, {
-    //     timeout: 300000,
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       'Authorization': `Bearer ${token}`
-    //     },
-    //   });
-    //   // const result = response.data;
-    //   // if (result.success) {
-    //   //   setTransbankToken(result.token);
-    //   //   navigate('/confirm-purchase', { state: { token: result.token, url: result.url, userId: user.sub, stockId: stock_id, stockPrice: stock_price, stockSymbol: stock_symbol, stockShortName: stock_shortName, location: location } });
-  
-    //   // } else {
-    //   //   console.log("Success error");
-    //   //   setPopupMessage(result.message);
-    //   //   setShowPopup(true);
-    //   // }
-    // } catch (error) {
-    //   console.log("Simulate earnings error");
-    //   console.log(error);
-    //   setPopupMessage(error.message);
-    //   setShowPopup(true);
-    // }
+      if (userId === '75fa76c7-a551-4cb9-9f03-3c4472067f2d') {
+        // const ipResponse = await axios.get('https://ipinfo.io/json?token=f27743517e5212');
+        // const location = ipResponse.data.country + ' - ' + ipResponse.data.region + ' - ' + ipResponse.data.city;
+        const location = "Chile - Region Metropolitana - Santiago"; // Para test
+
+        const response = await axios.post('https://api.asyncfintech.me/buyIntention', {
+          userId: user.sub,
+          stockId: stock_id,
+          stockPrice: Math.round(stock_price),
+          stockSymbol: stock_symbol,
+          stockShortName: stock_shortName,
+          location: location
+        }, {
+          timeout: 300000,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+        });
+        const result = response.data;
+        if (result.success) {
+          setTransbankToken(result.token);
+          navigate('/confirm-purchase', { state: { token: result.token, url: result.url, userId: user.sub, stockId: stock_id, stockPrice: stock_price, stockSymbol: stock_symbol, stockShortName: stock_shortName, location: location } });
+    
+        } else {
+          console.log("Success error");
+          setPopupMessage(result.message);
+          setShowPopup(true);
+        }
+      }
+      else {
+        throw new Error("Unauthorized access");
+      }
+
+    } catch (error) {
+      console.log("Buy error");
+      console.log(error);
+      setPopupMessage(error.message);
+      setShowPopup(true);
+    }
+  }
+
+  const handleSimulateEarnings = async (stock_id, stock_price, stock_symbol, stock_shortName) => {
+
     // Guardar los valores y otros detalles necesarios en el estado
     // Guarda los detalles del stock en el estado
     setSelectedStockSymbol(stock_symbol);
@@ -371,6 +386,16 @@ const handleDetailsNext = async () => {
                   </button>
                 </div>
               )}
+              {!detail.isBought && (
+                <div className={styles.buttonContainer}>
+                <button
+                  className={styles.buyStockButton}
+                  onClick={() => handleBuyStockGroup(detail.stock_id, detail.price, detail.symbol, detail.shortName, user.sub)}
+                >
+                  Buy Stock for Group
+                </button>
+              </div>
+            )}
               {detail.isBought && (
                 <button
                   className={styles.buyStockButton}
