@@ -108,7 +108,7 @@ const PurchaseCompleted = () => {
       setError('User cancelled purchase...');
     }
   }
-  }, []);
+  }, [user]);
 
   return (
     <div className={styles.container}>
