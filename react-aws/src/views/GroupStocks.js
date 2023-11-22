@@ -1,8 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col } from 'reactstrap';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './viewsCss/groupstocks.module.css';
-import Loading from '../components/Loading';
-import ErrorMessage from '../components/ErrorMessage'
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
@@ -14,12 +11,8 @@ const userPool = new CognitoUserPool({
 });
 
 function Group_stocks()  {
-  const [data, setData] = useState(null);
   const [stocks, setStocks] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [hasMoreStocks, setHasMoreStocks] = useState(true);
-  const [hasMoreDetails, setHasMoreDetails] = useState(true);
   const [token, setToken] = useState(null);
   const [transbankToken, setTransbankToken] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
@@ -27,8 +20,8 @@ function Group_stocks()  {
   const [userData, setUserData] = useState(null);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isApiCalled, setIsApiCalled] = useState(false);
   const [fraction, setFraction] = useState(1);
+  const hasFetchedStocks = useRef(false);
 
   const cognitoUser = userPool.getCurrentUser();
   const navigate = useNavigate();
@@ -44,6 +37,7 @@ function Group_stocks()  {
           setToken(newToken);
           const newUserDetails = session.getIdToken().payload;
           setUser(newUserDetails);
+          console.log(newUserDetails);
           
           if (newUserDetails['cognito:groups'] && newUserDetails['cognito:groups'].includes('Admin')) {
             setIsAdmin(true);
@@ -91,6 +85,7 @@ function Group_stocks()  {
         },
       });
       const result = response.data;
+      console.log(result)
       if (result.success) {
         setTransbankToken(result.token);
         navigate('/confirm-purchase-fraction', { state: { token: result.token, url: result.url, userId: user.sub, stockId: stock_id, stockPrice: stock_price, stockSymbol: stock_symbol, stockShortName: stock_shortName, location: location, fraction: fraction } });
@@ -109,11 +104,15 @@ function Group_stocks()  {
   };
 
   useEffect(() => {
-
+    if (hasFetchedStocks.current || !token) {
+      return;
+    }
+    hasFetchedStocks.current = true;
+    
     if (token) {
       const fetchStocks = async () => {
         try {
-          const response = await axios.get(`https://api.asyncfintech.me/getUser?auth0Id=${'75fa76c7-a551-4cb9-9f03-3c4472067f2d'}`, {
+          const response = await axios.get(`https://api.asyncfintech.me/getUser?auth0Id=${'d6cec5cf-8f89-49b4-b8d9-31699db0a052'}`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -137,13 +136,17 @@ function Group_stocks()  {
   , [token]);
 
   return (
+
+    stocks ?
+
     <div className={styles.container}>
       {stocks.map(stock => (
         <div key={stock.stockId} className={styles.stockItem}>
           <h3 className={styles.stockTitle}>{stock.stockShortName} ({stock.stockSymbol})</h3>
           <div className={styles.stockDetails}>
-            <p>Price: <span className={styles.stockPrice}>${stock.stockPrice}</span></p>
-            <p>Date: <span className={styles.stockDate}>{new Date(stock.date).toLocaleDateString()}</span></p>
+            <p>Price: <span>${stock.stockPrice}</span></p>
+            <p>Date: <span>{new Date(stock.date).toLocaleDateString()}</span></p>
+            <p>Fraction: <span>{stock.fractions}</span></p>
           </div>
           {!isAdmin && (
             <div className={styles.buyStockSection}>
@@ -168,7 +171,11 @@ function Group_stocks()  {
         </div>
       ))}
     </div>
-  );  
+    :
+    <div className={styles.container}>
+      <h1 className={styles.header}>Your Group doesn't have any stocks yet.</h1>
+    </div>
+  );
 
 }
 

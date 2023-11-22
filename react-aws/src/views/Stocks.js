@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './viewsCss/stocks.module.css';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
 import UserPhoto from '../utils/UserPhoto.png';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import { useNavigate } from "react-router-dom";
@@ -35,6 +34,7 @@ const Stocks = () => {
   const [simulateEarningsData, setSimulateEarningsData] = useState({});
   const [showSimulateEarningsForm, setShowSimulateEarningsForm] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const hasFetchedStocks = useRef(false);
 
   const navigate = useNavigate();
   const cognitoUser = userPool.getCurrentUser();
@@ -116,7 +116,7 @@ const Stocks = () => {
   const handleBuyStockGroup = async (stock_id, stock_price, stock_symbol, stock_shortName, userId) => {
     try {
 
-      if (userId === '75fa76c7-a551-4cb9-9f03-3c4472067f2d') {
+      if (userId === 'd6cec5cf-8f89-49b4-b8d9-31699db0a052') {
         // const ipResponse = await axios.get('https://ipinfo.io/json?token=f27743517e5212');
         // const location = ipResponse.data.country + ' - ' + ipResponse.data.region + ' - ' + ipResponse.data.city;
         const location = "Chile - Region Metropolitana - Santiago"; // Para test
@@ -200,9 +200,14 @@ const Stocks = () => {
     if (token) {
       fetchStocks();
     }
-  }, [page, token]);  
+  }, [token]);  
 
   useEffect(() => {
+    if (hasFetchedStocks.current || !token) {
+      return;
+    }
+    hasFetchedStocks.current = true;
+
     const fetchStockDetails = async () => {
       try {
         const response = await axios.get(`https://api.asyncfintech.me/stocks/${selectedStockSymbol}`, {

@@ -56,8 +56,9 @@ const PurchaseCompleted = () => {
   , [user]);
 
   useEffect(() => {
-    //console.log('useEffect is running. Location:', location, 'User:', user, 'UserData:', userData, 'isPostSent:', isPostSent);
-    if (!isPostSent && user) {
+    const shouldSendPostRequest = !isPostSent && user && new URLSearchParams(location.search).get('token_ws');
+    
+    if (shouldSendPostRequest) {
       const token_ws = new URLSearchParams(location.search).get('token_ws');
 
       if (token_ws) {
@@ -107,7 +108,7 @@ const PurchaseCompleted = () => {
       setError('User cancelled purchase...');
     }
   }
-  }, [location, user, userData, isPostSent]);
+  }, []);
 
   return (
     <div className={styles.container}>
