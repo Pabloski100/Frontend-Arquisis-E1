@@ -39,6 +39,7 @@ function My_stocks() {
           setToken(newToken);
           const newUserDetails = session.getIdToken().payload;
           setUser(newUserDetails);
+          console.log(newUserDetails);
 
           axios.get(`https://api.asyncfintech.me/getUser?auth0Id=${newUserDetails.sub}`, {
             headers: {
@@ -138,6 +139,7 @@ function My_stocks() {
                 <p className={styles.text}>Price: {stock.stockPrice}</p>
                 <p className={styles.text}>Date: {formatDate(stock.date)}</p>
                 <p className={styles.text}>Location: {stock.location}</p>
+                <p className={styles.text}>Fractions: {stock.fractions}</p>
               </div>
             ))}
             <h2 className={styles.header}>Chart</h2>

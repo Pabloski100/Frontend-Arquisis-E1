@@ -16,7 +16,7 @@ const ConfirmPurchaseFraction = () => {
       <h2 className={styles.subHeader}>Stock Details</h2>
       <p className={styles.details}><strong>Stock Name:</strong> {stockShortName}</p>
       <p className={styles.details}><strong>Stock Symbol:</strong> {stockSymbol}</p>
-      <p className={styles.details}><strong>Fraction Price:</strong> {stockPrice}</p>
+      <p className={styles.details}><strong>Fraction Price:</strong> {stockPrice * fraction}</p>
       <form className={styles.form} action={url} method="POST">
         <input type="hidden" value={token} name="token_ws" />
         <button className={styles.confirmButton} type="submit">
