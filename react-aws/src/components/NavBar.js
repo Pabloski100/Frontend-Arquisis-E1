@@ -33,6 +33,7 @@ const Navbar = () => {
     { to: '/mystocks', label: 'My Stocks' },
     { to: '/mypredictions', label: 'My Predictions' },
     { to: '/groupstocks', label: 'Group Stocks' },
+    { to: '/auctions', label: 'Auctions' },
     { to: '/', label: 'Sign Out', action: signOut }
   ];
 

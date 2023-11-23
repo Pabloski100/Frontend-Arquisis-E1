@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import { useNavigate } from "react-router-dom";
+import { v4 as uuid } from "uuid";
 
 const userPool = new CognitoUserPool({
   UserPoolId: process.env.REACT_APP_USERPOOL_ID,
@@ -135,6 +136,41 @@ function Group_stocks()  {
   }
   , [token]);
 
+  const handleOfferStock = async (stock_id, stock_price, stock_symbol, stock_shortName, fraction) => {
+
+    try {
+       const response = await axios.post('http://localhost:3002/offerStock', {
+        auction_id: uuid(),
+        proposal_id: "",
+        stock_id: stock_id,
+        quantity: 1,
+        group_id: 28,
+        type: "offer"
+      }, {
+        timeout: 300000,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+      });
+      const result = response.data;
+      console.log(result)
+      if (result.success) {
+        setPopupMessage("Stock offered successfully");
+        setShowPopup(true);
+      } else {
+        console.log("Success error");
+        setPopupMessage(result.message);
+        setShowPopup(true);
+      }
+    }
+    catch (error) {
+      console.log("Offer error");
+      console.log(error);
+      setPopupMessage(error.message);
+      setShowPopup(true);
+    }
+  }
+
   return (
 
     stocks ?
@@ -165,6 +201,26 @@ function Group_stocks()  {
                 onClick={() => handleBuyFractions(stock.stockId, stock.stockPrice, stock.stockSymbol, stock.stockShortName, fraction)}
               >
                 Buy Fractions
+              </button>
+            </div>
+          )}
+          {isAdmin && (
+            <div className={styles.buyStockSection}>
+              <input 
+                type="number" 
+                min="0.1" 
+                max="1" 
+                step="0.1" 
+                defaultValue="1" 
+                className={styles.fractionInput} 
+                onChange={(e) => setFraction(parseFloat(e.target.value))}
+                aria-label="Fraction to buy"
+              />
+              <button 
+                className={styles.buyStockButton} 
+                onClick={() => handleOfferStock(stock.stockId, stock.stockPrice, stock.stockSymbol, stock.stockShortName, fraction)}
+              >
+                Offer Stock
               </button>
             </div>
           )}
