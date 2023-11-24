@@ -22,6 +22,9 @@ const Auctions = () => {
   const [isLoading, setIsLoading] = useState(true);
   const hasFetchedAuctions = useRef(false);
   const [quantities, setQuantities] = useState({});
+  const [ourAuctions, setOurAuctions] = useState([]);
+  const [selectedAuction, setSelectedAuction] = useState({ stock_id: '', quantity: 0 });
+  const [maxQuantity, setMaxQuantity] = useState(0);
 
   const cognitoUser = userPool.getCurrentUser();
 
@@ -88,6 +91,10 @@ const Auctions = () => {
         );
         const data = response.data;
         setAuctions(data);
+
+        const ourAuctions = data.filter(auction => auction.group_id === 28);
+        setOurAuctions(ourAuctions);
+        console.log(ourAuctions);
         setIsLoading(false);
       } catch (error) {
         console.log("Function error")
@@ -101,6 +108,7 @@ const Auctions = () => {
   }, [token]);
 
   const handleMakeOffer = async (auction_id, stock_id, quantity, group_id) => {
+    console.log(auction_id, stock_id, quantity, group_id);
     try {
       const response = await axios.post(
         'http://localhost:3002/makeOffer',
@@ -129,11 +137,25 @@ const Auctions = () => {
     }
   }
 
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setSelectedAuction({ ...selectedAuction, [name]: value });
+
+    // Update maxQuantity based on the selected stock
+    const selectedStock = ourAuctions.find(auction => auction.stock_id === value);
+    if (selectedStock) {
+      setMaxQuantity(selectedStock.quantity);
+    } else {
+      setMaxQuantity(0); // Reset if no stock is selected
+    }
+  };
+
   return (
 
     isAdmin ? (
 
     <div className={styles.container}>
+      <h2>Our Auctions</h2>
       {auctions.length > 0 ? (
         auctions.map((auction) => (
           auction.type === 'offer' && (
@@ -147,22 +169,29 @@ const Auctions = () => {
               {auction.proposalId && <p>Proposal ID: {auction.proposalId}</p>}
               {auction.group_id !== '28' && (
                 <div className={styles.buyStockSection}>
-                    <input 
-                      className={styles.quantityInput}
-                      type="number" 
-                      value={quantities[auction.id] || ''} 
-                      onChange={(e) => handleQuantityChange(auction.id, e.target.value)}
-                      max={auction.quantity}
-                      min="0"
-                    />
+                  <select name="stock_id" onChange={handleChange}>
+                    <option value="">Select stock</option>
+                    {ourAuctions.map(auction => (
+                      <option key={auction.auction_id} value={auction.stock_id}>{auction.stock_id}</option>
+                    ))}
+                  </select>
 
-                    <button 
-                      className={styles.buyStockButton} 
-                      onClick={() => handleMakeOffer(auction.auction_id, auction.stock_id, quantities[auction.id], auction.group_id)}
-                      disabled={quantities[auction.id] > auction.quantity || quantities[auction.id] <= 0}
-                    >
-                      Make Offer
-                    </button>
+                  <input 
+                    className={styles.quantityInput}
+                    type="number" 
+                    value={quantities[auction.id] || ''} 
+                    onChange={(e) => handleQuantityChange(auction.id, e.target.value)}
+                    max={maxQuantity}
+                    min="0"
+                  />
+
+                  <button
+                    className={styles.buyStockButton}
+                    onClick={() => handleMakeOffer(auction.auction_id, selectedAuction.stock_id, quantities[auction.id], auction.group_id)}
+                  >
+                    Make offer
+                  </button>     
+
                 </div>
                 )}
               </div>

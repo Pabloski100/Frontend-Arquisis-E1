@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styles from './viewsCss/auctions.module.css';
+import styles from './viewsCss/offers.module.css';
 import axios from 'axios';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import { useNavigate } from "react-router-dom";
@@ -64,44 +64,48 @@ const Offers = () => {
 
   useEffect(() => {
     if (hasFetchedAuctions.current || !token) {
-      return;
+        return;
     }
     hasFetchedAuctions.current = true;
 
-    if (token) {
     const fetchAuctions = async () => {
-      try {
-        const response = await axios.get(
-          'http://localhost:3002/auctions',
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = response.data;
-        console.log(data);
-        setAuctions(data);
-        setIsLoading(false);
-        const filtered = data.filter(auction => 
-          auction.group_id === 28 && auction.type === 'offer'
-        );
-        setFilteredOffers(filtered);
-        const proposals = data.filter(auction => 
-          auction.type === 'proposal' && 
-          filtered.some(offer => offer.auction_id === auction.auction_id)
-        );
-        setRelatedProposals(proposals);
-      } catch (error) {
-        console.log("Function error")
-        setError(error);
-        setIsLoading(false);
-      }
-    };
-     fetchAuctions();
-  }}, [token]);
+        try {
+            const response = await axios.get(
+                'http://localhost:3002/auctions',
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            const data = response.data;
 
-  const handleResponseOffer = async (auction_id, stock_id, quantity, group_id) => {
+            // Separate offers and proposals
+            const offers = data.filter(auction => auction.group_id === 28 && auction.type === 'offer');
+            const proposals = data.filter(auction => auction.type === 'proposal');
+
+            // Associate proposals with their respective offers
+            const offersWithProposals = offers.map(offer => {
+                return {
+                    ...offer,
+                    proposals: proposals.filter(proposal => proposal.auction_id === offer.auction_id)
+                };
+            });
+
+            setAuctions(offersWithProposals);
+            setIsLoading(false);
+
+        } catch (error) {
+            console.log("Function error")
+            setError(error);
+            setIsLoading(false);
+        }
+    };
+
+    fetchAuctions();
+  }, [token]);
+
+  const handleResponse = async (auction_id, stock_id, quantity, group_id, type) => {
     try {
       const response = await axios.post(
         'http://localhost:3002/makeResponseOffer',
@@ -133,27 +137,41 @@ const Offers = () => {
   return (
     isAdmin ? (
       <div className={styles.container}>
-        <h2>My Offers</h2>
-        {filteredOffers.map(offer => (
+        <h2>My Offers and Proposals</h2>
+        {auctions.map(offer => (
           <div key={offer.auction_id} className={styles.stockItem}>
-              <h3>Stock: {offer.stock_id}</h3>
-              <p>Id Auction: {offer.auction_id}</p>
-              <p>Type: {offer.type}</p>
-              <p>Group ID: {offer.group_id}</p>
-              <p>Quantity: {offer.quantity}</p>
-              {offer.proposalId && <p>Proposal ID: {offer.proposalId}</p>}
-          </div>
-        ))}
-        <h2>Related Proposals</h2>
-        {relatedProposals.map(proposal => (
-          <div key={proposal.auction_id} className={styles.stockItem}>
-            <h2>Proposal by group: {proposal.group_id}</h2>
-              <h3>Stock: {proposal.stock_id}</h3>
-              <p>Id Auction: {proposal.auction_id}</p>
-              <p>Type: {proposal.type}</p>
-              <p>Group ID: {proposal.group_id}</p>
-              <p>Quantity: {proposal.quantity}</p>
-              {proposal.proposalId && <p>Proposal ID: {proposal.proposalId}</p>}
+            <h1>Stock Offered: {offer.stock_id}</h1>
+            <p>Id Auction: {offer.auction_id}</p>
+            <p>Type: {offer.type}</p>
+            <p>Group ID: {offer.group_id}</p>
+            <p>Quantity: {offer.quantity}</p>
+            {offer.proposalId && <p>Proposal ID: {offer.proposalId}</p>}
+            <h1>Related Proposals</h1>
+            {offer.proposals.map(proposal => (
+              <div key={proposal.auction_id} className={styles.stockItem}>
+                <h2>Proposal by group: {proposal.group_id}</h2>
+                  <h3>Stock proposal: {proposal.stock_id}</h3>
+                  <p>Id Auction: {proposal.auction_id}</p>
+                  <p>Type: {proposal.type}</p>
+                  <p>Group ID: {proposal.group_id}</p>
+                  <p>Quantity: {proposal.quantity}</p>
+                  {proposal.proposalId && <p>Proposal ID: {proposal.proposalId}</p>}
+                  <div className={styles.buyStockSection}>
+                    <button 
+                    className={styles.buyStockButtonAccept}
+                    onClick={() => handleResponse(proposal.auction_id, proposal.stock_id, proposal.quantity, proposal.group_id, 'acceptance')}
+                  >
+                    Accept
+                  </button>
+                  <button 
+                    className={styles.buyStockButtonReject}
+                    onClick={() => handleResponse(proposal.auction_id, proposal.stock_id, proposal.quantity, proposal.group_id, 'rejection')}
+                  >
+                    Reject
+                    </button>
+                  </div>
+              </div>
+            ))}
           </div>
         ))}
       </div>

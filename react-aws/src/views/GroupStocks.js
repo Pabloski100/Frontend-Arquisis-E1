@@ -176,6 +176,7 @@ function Group_stocks()  {
     stocks ?
 
     <div className={styles.container}>
+      <h2>Our Group Stocks</h2>
       {stocks.map(stock => (
         <div key={stock.stockId} className={styles.stockItem}>
           <h3 className={styles.stockTitle}>{stock.stockShortName} ({stock.stockSymbol})</h3>
