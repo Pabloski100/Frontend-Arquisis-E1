@@ -142,7 +142,7 @@ function Group_stocks()  {
        const response = await axios.post('http://localhost:3002/offerStock', {
         auction_id: uuid(),
         proposal_id: "",
-        stock_id: stock_id,
+        stock_id: stock_symbol,
         quantity: 1,
         group_id: 28,
         type: "offer"

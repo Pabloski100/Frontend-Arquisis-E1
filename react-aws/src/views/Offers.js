@@ -10,7 +10,7 @@ const userPool = new CognitoUserPool({
   ClientId: process.env.REACT_APP_APPCLIENT_ID,
 });
 
-const Auctions = () => {
+const Offers = () => {
   const [auctions, setAuctions] = useState([]);
   const [token, setToken] = useState(null);
   const [error, setError] = useState(null);
@@ -20,17 +20,11 @@ const Auctions = () => {
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [filteredOffers, setFilteredOffers] = useState([]);
+  const [relatedProposals, setRelatedProposals] = useState([]);
   const hasFetchedAuctions = useRef(false);
-  const [quantities, setQuantities] = useState({});
 
   const cognitoUser = userPool.getCurrentUser();
-
-  const handleQuantityChange = (auctionId, value) => {
-    const quantity = parseInt(value, 10);
-    if (!isNaN(quantity) && quantity >= 0) {
-      setQuantities({ ...quantities, [auctionId]: quantity });
-    }
-  };
 
   useEffect(() => {
     if (cognitoUser !== null) {
@@ -75,7 +69,6 @@ const Auctions = () => {
     hasFetchedAuctions.current = true;
 
     if (token) {
-
     const fetchAuctions = async () => {
       try {
         const response = await axios.get(
@@ -87,23 +80,31 @@ const Auctions = () => {
           }
         );
         const data = response.data;
+        console.log(data);
         setAuctions(data);
         setIsLoading(false);
+        const filtered = data.filter(auction => 
+          auction.group_id === 28 && auction.type === 'offer'
+        );
+        setFilteredOffers(filtered);
+        const proposals = data.filter(auction => 
+          auction.type === 'proposal' && 
+          filtered.some(offer => offer.auction_id === auction.auction_id)
+        );
+        setRelatedProposals(proposals);
       } catch (error) {
         console.log("Function error")
         setError(error);
         setIsLoading(false);
       }
     };
+     fetchAuctions();
+  }}, [token]);
 
-      fetchAuctions();
-    }
-  }, [token]);
-
-  const handleMakeOffer = async (auction_id, stock_id, quantity, group_id) => {
+  const handleResponseOffer = async (auction_id, stock_id, quantity, group_id) => {
     try {
       const response = await axios.post(
-        'http://localhost:3002/makeOffer',
+        'http://localhost:3002/makeResponseOffer',
         {
           auction_id: auction_id,
           proposal_id: uuid(),
@@ -130,54 +131,38 @@ const Auctions = () => {
   }
 
   return (
-
     isAdmin ? (
-
-    <div className={styles.container}>
-      {auctions.length > 0 ? (
-        auctions.map((auction) => (
-          auction.type === 'offer' && (
-            <div key={auction.id} className={styles.stockItem}>
-              <h2>Auction by group: {auction.group_id}</h2>
-              <h3>Stock: {auction.stock_id}</h3>
-              <p>Id Auction: {auction.auction_id}</p>
-              <p>Type: {auction.type}</p>
-              <p>Group ID: {auction.group_id}</p>
-              <p>Quantity: {auction.quantity}</p>
-              {auction.proposalId && <p>Proposal ID: {auction.proposalId}</p>}
-              {auction.group_id !== '28' && (
-                <div className={styles.buyStockSection}>
-                    <input 
-                      className={styles.quantityInput}
-                      type="number" 
-                      value={quantities[auction.id] || ''} 
-                      onChange={(e) => handleQuantityChange(auction.id, e.target.value)}
-                      max={auction.quantity}
-                      min="0"
-                    />
-
-                    <button 
-                      className={styles.buyStockButton} 
-                      onClick={() => handleMakeOffer(auction.auction_id, auction.stock_id, quantities[auction.id], auction.group_id)}
-                      disabled={quantities[auction.id] > auction.quantity || quantities[auction.id] <= 0}
-                    >
-                      Make Offer
-                    </button>
-                </div>
-                )}
-              </div>
-            )
-          ))
-        ) : (
-          <p>No auctions found</p>
-        )}
-    </div>
-    ) : (
       <div className={styles.container}>
-        <h2>You are not an admin</h2>
+        <h2>My Offers</h2>
+        {filteredOffers.map(offer => (
+          <div key={offer.auction_id} className={styles.stockItem}>
+              <h3>Stock: {offer.stock_id}</h3>
+              <p>Id Auction: {offer.auction_id}</p>
+              <p>Type: {offer.type}</p>
+              <p>Group ID: {offer.group_id}</p>
+              <p>Quantity: {offer.quantity}</p>
+              {offer.proposalId && <p>Proposal ID: {offer.proposalId}</p>}
+          </div>
+        ))}
+        <h2>Related Proposals</h2>
+        {relatedProposals.map(proposal => (
+          <div key={proposal.auction_id} className={styles.stockItem}>
+            <h2>Proposal by group: {proposal.group_id}</h2>
+              <h3>Stock: {proposal.stock_id}</h3>
+              <p>Id Auction: {proposal.auction_id}</p>
+              <p>Type: {proposal.type}</p>
+              <p>Group ID: {proposal.group_id}</p>
+              <p>Quantity: {proposal.quantity}</p>
+              {proposal.proposalId && <p>Proposal ID: {proposal.proposalId}</p>}
+          </div>
+        ))}
       </div>
-    )
+      ) : (
+        <div className={styles.container}>
+          <h2>You are not an admin</h2>
+        </div>
+      )
   );
-}
+};  
 
-export default Auctions;
+export default Offers;
