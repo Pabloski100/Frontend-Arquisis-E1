@@ -5,11 +5,14 @@ import { useSelector } from 'react-redux';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import { useNavigate } from "react-router-dom";
 import io from 'socket.io-client';
+// import { w3cwebsocket as W3CWebSocket } from "websocket";
 
 const userPool = new CognitoUserPool({
   UserPoolId: process.env.REACT_APP_USERPOOL_ID,
   ClientId: process.env.REACT_APP_APPCLIENT_ID,
 });
+
+// const client = new W3CWebSocket('http://localhost:3001');
 
 function Group_stocks()  {
   const [stocks, setStocks] = useState([]);
@@ -68,7 +71,7 @@ function Group_stocks()  {
   const [receivedMessage, setReceivedMessage] = useState('');
 
   useEffect(() => {
-    const socket = io('https://api.asyncfintech.me/'); // Replace with your NestJS server URL
+    const socket = io('http://localhost:3001/stocks'); // Replace with your NestJS server URL
 
     // Event handler for incoming messages from the server
     socket.on('message', (data) => {
@@ -83,7 +86,7 @@ function Group_stocks()  {
   }, []); 
 
   const sendMessage = () => {
-    const socket = io('https://api.asyncfintech.me/'); // Replace with your NestJS server URL
+    const socket = io('http://localhost:3001/stocks'); // Replace with your NestJS server URL
     socket.emit('clientMessage', message);
     setMessage(''); // Clear the input field after sending the message
   };
