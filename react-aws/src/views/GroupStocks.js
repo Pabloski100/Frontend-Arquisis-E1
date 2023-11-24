@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import { useNavigate } from "react-router-dom";
+import io from 'socket.io-client';
 
 const userPool = new CognitoUserPool({
   UserPoolId: process.env.REACT_APP_USERPOOL_ID,
@@ -63,6 +64,30 @@ function Group_stocks()  {
     }
     , []);
 
+  const [message, setMessage] = useState('');
+  const [receivedMessage, setReceivedMessage] = useState('');
+
+  useEffect(() => {
+    const socket = io('https://api.asyncfintech.me/'); // Replace with your NestJS server URL
+
+    // Event handler for incoming messages from the server
+    socket.on('message', (data) => {
+      setReceivedMessage(data);
+      console.log(data);
+    });
+
+    // Cleanup the socket connection when the component unmounts
+    return () => {
+      socket.disconnect();
+    };
+  }, []); 
+
+  const sendMessage = () => {
+    const socket = io('https://api.asyncfintech.me/'); // Replace with your NestJS server URL
+    socket.emit('clientMessage', message);
+    setMessage(''); // Clear the input field after sending the message
+  };
+
   const handleBuyFractions = async (stock_id, stock_price, stock_symbol, stock_shortName, fraction) => {
     try {
       // const ipResponse = await axios.get('https://ipinfo.io/json?token=f27743517e5212');
@@ -88,8 +113,9 @@ function Group_stocks()  {
       console.log(result)
       if (result.success) {
         setTransbankToken(result.token);
+        setMessage("Se ha comprado una fracción de acción");
+        sendMessage();
         navigate('/confirm-purchase-fraction', { state: { token: result.token, url: result.url, userId: user.sub, stockId: stock_id, stockPrice: stock_price, stockSymbol: stock_symbol, stockShortName: stock_shortName, location: location, fraction: fraction } });
-    
       } else {
         console.log("Success error");
         setPopupMessage(result.message);
