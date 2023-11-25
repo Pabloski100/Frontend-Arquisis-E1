@@ -106,7 +106,7 @@ const PurchaseCompletedFraction = () => {
       setError('User cancelled purchase...');
     }
   }
-  }, [location, user, userData, isPostSent]);
+  }, [user]);
 
   return (
     <div className={styles.container}>

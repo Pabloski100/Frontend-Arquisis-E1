@@ -83,6 +83,7 @@ const Offers = () => {
             // Separate offers and proposals
             const offers = data.filter(auction => auction.group_id === 28 && auction.type === 'offer');
             const proposals = data.filter(auction => auction.type === 'proposal');
+            console.log(proposals);
 
             // Associate proposals with their respective offers
             const offersWithProposals = offers.map(offer => {
@@ -105,17 +106,19 @@ const Offers = () => {
     fetchAuctions();
   }, [token]);
 
-  const handleResponse = async (auction_id, stock_id, quantity, group_id, type) => {
+  const handleResponse = async (auction_id, stock_id, proposal_id, quantity, group_id, type) => {
     try {
+
+      if (isAdmin) {
       const response = await axios.post(
-        'http://localhost:3002/makeResponseOffer',
+        'http://localhost:3002/responseOffer',
         {
           auction_id: auction_id,
-          proposal_id: uuid(),
+          proposal_id: proposal_id,
           stock_id: stock_id,
           quantity: quantity,
           group_id: group_id,
-          type: 'proposal'
+          type: type
         },
         {
           headers: {
@@ -128,18 +131,23 @@ const Offers = () => {
       setShowPopup(true);
       setPopupMessage("Offer made successfully!");
     }
+  }
     catch (error) {
       console.log("Function error")
       setError(error);
     }
   }
 
+  const closePopup = () => {
+    setShowPopup(false);
+  };
+
   return (
     isAdmin ? (
       <div className={styles.container}>
         <h2>My Offers and Proposals</h2>
         {auctions.map(offer => (
-          <div key={offer.auction_id} className={styles.stockItem}>
+          <div key={offer} className={styles.stockItem}>
             <h1>Stock Offered: {offer.stock_id}</h1>
             <p>Id Auction: {offer.auction_id}</p>
             <p>Type: {offer.type}</p>
@@ -152,6 +160,7 @@ const Offers = () => {
                 <h2>Proposal by group: {proposal.group_id}</h2>
                   <h3>Stock proposal: {proposal.stock_id}</h3>
                   <p>Id Auction: {proposal.auction_id}</p>
+                  <p>Id Proposal: {proposal.proposal_id}</p>
                   <p>Type: {proposal.type}</p>
                   <p>Group ID: {proposal.group_id}</p>
                   <p>Quantity: {proposal.quantity}</p>
@@ -159,13 +168,13 @@ const Offers = () => {
                   <div className={styles.buyStockSection}>
                     <button 
                     className={styles.buyStockButtonAccept}
-                    onClick={() => handleResponse(proposal.auction_id, proposal.stock_id, proposal.quantity, proposal.group_id, 'acceptance')}
+                    onClick={() => handleResponse(proposal.auction_id, proposal.stock_id, proposal.proposal_id, proposal.quantity, proposal.group_id, 'acceptance')}
                   >
                     Accept
                   </button>
                   <button 
                     className={styles.buyStockButtonReject}
-                    onClick={() => handleResponse(proposal.auction_id, proposal.stock_id, proposal.quantity, proposal.group_id, 'rejection')}
+                    onClick={() => handleResponse(proposal.auction_id, proposal.stock_id, proposal.proposal_id, proposal.quantity, proposal.group_id, 'rejection')}
                   >
                     Reject
                     </button>
@@ -174,6 +183,19 @@ const Offers = () => {
             ))}
           </div>
         ))}
+        {showPopup && (
+        <div className={styles.popup}>
+          <div className={styles.popupHeader}>
+            <h2>Status</h2>
+            <span className={styles.popupClose} onClick={closePopup}>
+              &times;
+            </span>
+          </div>
+          <div className={styles.popupContent}>
+            <p>{popupMessage}</p>
+          </div>
+        </div>
+      )}
       </div>
       ) : (
         <div className={styles.container}>

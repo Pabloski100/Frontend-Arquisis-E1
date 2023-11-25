@@ -139,11 +139,13 @@ function Group_stocks()  {
   const handleOfferStock = async (stock_id, stock_price, stock_symbol, stock_shortName, fraction) => {
 
     try {
+
+      if (isAdmin) {
        const response = await axios.post('http://localhost:3002/offerStock', {
         auction_id: uuid(),
         proposal_id: "",
         stock_id: stock_symbol,
-        quantity: 1,
+        quantity: fraction,
         group_id: 28,
         type: "offer"
       }, {
@@ -163,6 +165,7 @@ function Group_stocks()  {
         setShowPopup(true);
       }
     }
+    }
     catch (error) {
       console.log("Offer error");
       console.log(error);
@@ -170,6 +173,10 @@ function Group_stocks()  {
       setShowPopup(true);
     }
   }
+
+  const closePopup = () => {
+    setShowPopup(false);
+  };
 
   return (
 
@@ -190,9 +197,8 @@ function Group_stocks()  {
               <input 
                 type="number" 
                 min="0.1" 
-                max="1" 
-                step="0.1" 
-                defaultValue="1" 
+                max={stock.fractions} 
+                step="0.1"
                 className={styles.fractionInput} 
                 onChange={(e) => setFraction(parseFloat(e.target.value))}
                 aria-label="Fraction to buy"
@@ -209,9 +215,8 @@ function Group_stocks()  {
             <div className={styles.buyStockSection}>
               <input 
                 type="number" 
-                min="0.1" 
-                max="1" 
-                step="0.1" 
+                min="1" 
+                step="1" 
                 defaultValue="1" 
                 className={styles.fractionInput} 
                 onChange={(e) => setFraction(parseFloat(e.target.value))}
@@ -225,6 +230,19 @@ function Group_stocks()  {
               </button>
             </div>
           )}
+          {showPopup && (
+        <div className={styles.popup}>
+          <div className={styles.popupHeader}>
+            <h2>Status</h2>
+            <span className={styles.popupClose} onClick={closePopup}>
+              &times;
+            </span>
+          </div>
+          <div className={styles.popupContent}>
+            <p>{popupMessage}</p>
+          </div>
+        </div>
+      )}
         </div>
       ))}
     </div>
