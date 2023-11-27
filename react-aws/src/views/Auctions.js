@@ -82,7 +82,7 @@ const Auctions = () => {
     const fetchAuctions = async () => {
       try {
         const response = await axios.get(
-          'http://localhost:3002/auctions',
+          'https://api.asyncfintech.me/auctions',
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -113,7 +113,7 @@ const Auctions = () => {
 
       if (isAdmin) {
       const response = await axios.post(
-        'http://localhost:3002/makeOffer',
+        'https://api.asyncfintech.me/makeOffer',
         {
           auction_id: auction_id,
           proposal_id: uuid(),

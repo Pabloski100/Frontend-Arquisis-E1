@@ -26,6 +26,7 @@
     "react-scripts": "5.0.1",
     "reactstrap": "^9.2.0",
     "sass": "^1.69.2",
+    "socket.io-client": "^4.7.2",
     "styled-components": "^6.0.8",
     "transbank-sdk": "^4.0.0",
     "uuidv4": "^6.2.13",

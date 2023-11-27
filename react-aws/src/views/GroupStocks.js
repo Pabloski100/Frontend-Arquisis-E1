@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import { useNavigate } from "react-router-dom";
 import { v4 as uuid } from "uuid";
+import { io } from "socket.io-client";
 
 const userPool = new CognitoUserPool({
   UserPoolId: process.env.REACT_APP_USERPOOL_ID,
@@ -26,6 +27,31 @@ function Group_stocks()  {
 
   const cognitoUser = userPool.getCurrentUser();
   const navigate = useNavigate();
+
+  /* useEffect(() => {
+    const socket = io('https://api.asyncfintech.me', { 
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      transports: ['websocket'] });
+
+    socket.on('connect', () => {
+      console.log('Connected to socket.io server');
+    });
+
+    socket.on('onMessage', (data) => {
+      console.log('Event received: onMessage')
+      var last_element = data.content[data.content.length - 1];
+      console.log(last_element.isAdmin);
+      console.log(data)
+
+      if (last_element.isAdmin) {
+        var remove = data.content.pop();
+        setStocks(data.content);
+        console.log('is admin')
+      }
+    });
+  }, [token]); */
 
   useEffect(() => {
     if (cognitoUser !== null) {
@@ -141,7 +167,7 @@ function Group_stocks()  {
     try {
 
       if (isAdmin) {
-       const response = await axios.post('http://localhost:3002/offerStock', {
+       const response = await axios.post('https://api.asyncfintech.me/offerStock', {
         auction_id: uuid(),
         proposal_id: "",
         stock_id: stock_symbol,
@@ -188,6 +214,7 @@ function Group_stocks()  {
         <div key={stock.stockId} className={styles.stockItem}>
           <h3 className={styles.stockTitle}>{stock.stockShortName} ({stock.stockSymbol})</h3>
           <div className={styles.stockDetails}>
+            <p>Id: <span>{stock.stockId}</span></p>
             <p>Price: <span>${stock.stockPrice}</span></p>
             <p>Date: <span>{new Date(stock.date).toLocaleDateString()}</span></p>
             <p>Fraction: <span>{stock.fractions}</span></p>
