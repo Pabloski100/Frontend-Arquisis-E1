@@ -1,10 +1,11 @@
 
 import { useLocation } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import styles from './viewsCss/purchaseCompleted.module.css';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import emailjs from '@emailjs/browser'
+import { io } from "socket.io-client";
 
 const userPool = new CognitoUserPool({
   UserPoolId: process.env.REACT_APP_USERPOOL_ID,
@@ -20,6 +21,10 @@ const PurchaseCompleted = () => {
   const [userData, setUserData] = useState(null);
   const [isPostSent, setIsPostSent] = useState(false);
   const [receiptUrl, setReceiptUrl] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  /* const socket = io('https://api.asyncfintech.me', { transports: ['websocket'] }); */
+  const hasFetchedStocks = useRef(false);
+  const [stocks, setStocks] = useState([]);
 
   const cognitoUser = userPool.getCurrentUser();
 
@@ -34,6 +39,10 @@ const PurchaseCompleted = () => {
         setToken(newToken);
         const newUserDetails = session.getIdToken().payload;
         setUser(newUserDetails);
+
+        if (newUserDetails['cognito:groups'] && newUserDetails['cognito:groups'].includes('Admin')) {
+          setIsAdmin(true);
+        }
 
         axios.get(`https://api.asyncfintech.me/getUser?auth0Id=${newUserDetails.sub}`, {
         headers: {
@@ -55,6 +64,21 @@ const PurchaseCompleted = () => {
   }
   , [user]);
 
+  /* useEffect(() => {
+
+    socket.on('connect', () => {
+      console.log('Connected to socket.io server');
+    });
+
+    socket.on('onMessage', (data) => {
+      console.log('Event received: onMessage')
+    });
+  }, []);
+
+  const onSubmit = (data) => {
+    socket.emit('newMessage', data);
+  } */
+
   useEffect(() => {
     const shouldSendPostRequest = !isPostSent && user && new URLSearchParams(location.search).get('token_ws');
     
@@ -71,6 +95,7 @@ const PurchaseCompleted = () => {
         })
           .then( async (response) => {
           if (response.data.success) {
+
             setTransactionDetails(response.data.details);
             const emailParams = {
               from_name: "AsyncFintech",
@@ -95,7 +120,28 @@ const PurchaseCompleted = () => {
             if (typeof(url) === "string") {
               setReceiptUrl(url)
             }
-            setIsPostSent(true);
+
+            axios.get(`https://api.asyncfintech.me/getUser?auth0Id=${user.sub}`, {
+            headers: {
+            'Authorization': `Bearer ${token}`
+            }
+            })
+            .then(response => {
+              if (response.data.success) {
+                setUserData(response.data.data.stocks)
+              } else {
+                console.error(response.data.message);
+              }
+            }).catch(error => {
+              console.error("API call failed:", error);
+            });
+
+            /* setIsPostSent(true);
+            if (isAdmin) {
+              userData.push({isAdmin});
+            }
+
+            onSubmit(userData); */
           } else {
             setError('Your purchase was not successful. Please try again.');
           }

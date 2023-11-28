@@ -203,10 +203,6 @@ const Stocks = () => {
   }, [token]);  
 
   useEffect(() => {
-    if (hasFetchedStocks.current || !token) {
-      return;
-    }
-    hasFetchedStocks.current = true;
 
     const fetchStockDetails = async () => {
       try {

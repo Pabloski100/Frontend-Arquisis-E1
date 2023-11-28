@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import { useNavigate } from "react-router-dom";
+import { v4 as uuid } from "uuid";
+import { io } from "socket.io-client";
 
 const userPool = new CognitoUserPool({
   UserPoolId: process.env.REACT_APP_USERPOOL_ID,
@@ -25,6 +27,31 @@ function Group_stocks()  {
 
   const cognitoUser = userPool.getCurrentUser();
   const navigate = useNavigate();
+
+  /* useEffect(() => {
+    const socket = io('https://api.asyncfintech.me', { 
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      transports: ['websocket'] });
+
+    socket.on('connect', () => {
+      console.log('Connected to socket.io server');
+    });
+
+    socket.on('onMessage', (data) => {
+      console.log('Event received: onMessage')
+      var last_element = data.content[data.content.length - 1];
+      console.log(last_element.isAdmin);
+      console.log(data)
+
+      if (last_element.isAdmin) {
+        var remove = data.content.pop();
+        setStocks(data.content);
+        console.log('is admin')
+      }
+    });
+  }, [token]); */
 
   useEffect(() => {
     if (cognitoUser !== null) {
@@ -69,7 +96,7 @@ function Group_stocks()  {
       // const location = ipResponse.data.country + ' - ' + ipResponse.data.region + ' - ' + ipResponse.data.city;
       const location = "Chile - Region Metropolitana - Santiago"; // Para test
   
-      const response = await axios.post('https://nicostocks.me/buyIntentionFraction', {
+      const response = await axios.post('https://api.asyncfintech.me/buyIntentionFraction', {
         userId: user.sub,
         stockId: stock_id,
         stockPrice: Math.round(stock_price * fraction),
@@ -135,15 +162,59 @@ function Group_stocks()  {
   }
   , [token]);
 
+  const handleOfferStock = async (stock_id, stock_price, stock_symbol, stock_shortName, fraction) => {
+
+    try {
+
+      if (isAdmin) {
+       const response = await axios.post('https://api.asyncfintech.me/offerStock', {
+        auction_id: uuid(),
+        proposal_id: "",
+        stock_id: stock_symbol,
+        quantity: fraction,
+        group_id: 28,
+        type: "offer"
+      }, {
+        timeout: 300000,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+      });
+      const result = response.data;
+      console.log(result)
+      if (result.success) {
+        setPopupMessage("Stock offered successfully");
+        setShowPopup(true);
+      } else {
+        console.log("Success error");
+        setPopupMessage(result.message);
+        setShowPopup(true);
+      }
+    }
+    }
+    catch (error) {
+      console.log("Offer error");
+      console.log(error);
+      setPopupMessage(error.message);
+      setShowPopup(true);
+    }
+  }
+
+  const closePopup = () => {
+    setShowPopup(false);
+  };
+
   return (
 
     stocks ?
 
     <div className={styles.container}>
+      <h2>Our Group Stocks</h2>
       {stocks.map(stock => (
         <div key={stock.stockId} className={styles.stockItem}>
           <h3 className={styles.stockTitle}>{stock.stockShortName} ({stock.stockSymbol})</h3>
           <div className={styles.stockDetails}>
+            <p>Id: <span>{stock.stockId}</span></p>
             <p>Price: <span>${stock.stockPrice}</span></p>
             <p>Date: <span>{new Date(stock.date).toLocaleDateString()}</span></p>
             <p>Fraction: <span>{stock.fractions}</span></p>
@@ -153,9 +224,8 @@ function Group_stocks()  {
               <input 
                 type="number" 
                 min="0.1" 
-                max="1" 
-                step="0.1" 
-                defaultValue="1" 
+                max={stock.fractions} 
+                step="0.1"
                 className={styles.fractionInput} 
                 onChange={(e) => setFraction(parseFloat(e.target.value))}
                 aria-label="Fraction to buy"
@@ -168,6 +238,38 @@ function Group_stocks()  {
               </button>
             </div>
           )}
+          {isAdmin && (
+            <div className={styles.buyStockSection}>
+              <input 
+                type="number" 
+                min="1" 
+                step="1" 
+                defaultValue="1" 
+                className={styles.fractionInput} 
+                onChange={(e) => setFraction(parseFloat(e.target.value))}
+                aria-label="Fraction to buy"
+              />
+              <button 
+                className={styles.buyStockButton} 
+                onClick={() => handleOfferStock(stock.stockId, stock.stockPrice, stock.stockSymbol, stock.stockShortName, fraction)}
+              >
+                Offer Stock
+              </button>
+            </div>
+          )}
+          {showPopup && (
+        <div className={styles.popup}>
+          <div className={styles.popupHeader}>
+            <h2>Status</h2>
+            <span className={styles.popupClose} onClick={closePopup}>
+              &times;
+            </span>
+          </div>
+          <div className={styles.popupContent}>
+            <p>{popupMessage}</p>
+          </div>
+        </div>
+      )}
         </div>
       ))}
     </div>
