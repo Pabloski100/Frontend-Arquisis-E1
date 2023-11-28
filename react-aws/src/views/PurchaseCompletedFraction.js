@@ -60,7 +60,7 @@ const PurchaseCompletedFraction = () => {
       const token_ws = new URLSearchParams(location.search).get('token_ws');
 
       if (token_ws) {
-        axios.post('https://nicostocks.me/confirm-purchase-fraction', {
+        axios.post('https://api.asyncfintech.me/confirm-purchase-fraction', {
           token_ws,
         }, {
           headers: {

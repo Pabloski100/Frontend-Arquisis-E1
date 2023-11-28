@@ -96,7 +96,7 @@ function Group_stocks()  {
       // const location = ipResponse.data.country + ' - ' + ipResponse.data.region + ' - ' + ipResponse.data.city;
       const location = "Chile - Region Metropolitana - Santiago"; // Para test
   
-      const response = await axios.post('https://nicostocks.me/buyIntentionFraction', {
+      const response = await axios.post('https://api.asyncfintech.me/buyIntentionFraction', {
         userId: user.sub,
         stockId: stock_id,
         stockPrice: Math.round(stock_price * fraction),
